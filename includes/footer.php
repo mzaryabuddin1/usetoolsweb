@@ -27,6 +27,7 @@
     </script>
     <script src="https://cdn.jsdelivr.net/gh/ifrederico/accessible-web-widget@<?= ACC_WIDGET_VERSION ?>/dist/accessible-web-widget.min.js"></script>
 
+    <script src="/assets/js/theme-toggle.js"></script>
     <script src="/assets/js/main.js"></script>
     <?php if (!empty($extra_scripts)) echo $extra_scripts; ?>
 </body>

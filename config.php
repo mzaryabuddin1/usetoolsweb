@@ -30,6 +30,9 @@ define('ACC_WIDGET_POSITION', 'bottom-right'); // bottom-right | bottom-left | t
 define('ACC_WIDGET_OFFSET', '20,20');         // x, y in pixels
 define('ACC_WIDGET_LANG', 'en');
 
+/** Google Analytics — set to empty string to disable */
+define('GA_MEASUREMENT_ID', 'G-1VF9ZJ7EPG');
+
 /** Tool categories for home page grouping */
 $TOOL_CATEGORIES = [
     'image'      => 'Image Tools',

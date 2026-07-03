@@ -77,7 +77,6 @@ $TOOLS = [
     ['slug' => 'age-calculator', 'title' => 'Age Calculator', 'description' => 'Calculate exact age from date of birth.', 'icon' => '🎂', 'category' => 'calculator'],
     ['slug' => 'bmi-calculator', 'title' => 'BMI Calculator', 'description' => 'Calculate Body Mass Index from height and weight.', 'icon' => '⚖️', 'category' => 'calculator'],
     ['slug' => 'tip-calculator', 'title' => 'Tip Calculator', 'description' => 'Calculate tip amount and split bill between people.', 'icon' => '💵', 'category' => 'calculator'],
-    ['slug' => 'emi-calculator', 'title' => 'EMI Calculator', 'description' => 'Calculate monthly loan EMI, total interest, and payment schedule.', 'icon' => '🏦', 'category' => 'calculator'],
     // --- Generators ---
     ['slug' => 'password-generator', 'title' => 'Password Generator', 'description' => 'Generate strong random passwords with custom length and options.', 'icon' => '🔐', 'category' => 'generator'],
     ['slug' => 'uuid-generator', 'title' => 'UUID Generator', 'description' => 'Generate random UUID v4 identifiers instantly.', 'icon' => '🆔', 'category' => 'generator'],

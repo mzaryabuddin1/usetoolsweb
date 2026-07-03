@@ -1340,3 +1340,103 @@ select:focus {
 [data-theme="dark"] wave {
     filter: none;
 }
+
+/* Audio cutter — timeline editor */
+.timeline-editor {
+    margin-top: 1.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--color-border);
+}
+
+.timeline-editor-header h3 {
+    margin: 0 0 0.25rem;
+    font-size: 1rem;
+}
+
+.timeline-editor-header p {
+    margin: 0 0 0.75rem;
+}
+
+.timeline-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.timeline-options {
+    margin-bottom: 1rem;
+}
+
+.timeline-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.timeline-list:not(:empty) + .timeline-empty {
+    display: none;
+}
+
+.timeline-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.65rem 0.75rem;
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    cursor: grab;
+    user-select: none;
+}
+
+.timeline-item:active {
+    cursor: grabbing;
+}
+
+.timeline-item.drag-over {
+    border-color: var(--color-primary);
+    background: var(--color-primary-light);
+}
+
+.timeline-item.is-silence {
+    border-style: dashed;
+    opacity: 0.9;
+}
+
+.timeline-item-handle {
+    color: var(--color-muted);
+    font-size: 1rem;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+.timeline-item-body {
+    flex: 1;
+    min-width: 0;
+    font-size: 0.9rem;
+}
+
+.timeline-item-body strong {
+    display: block;
+    font-weight: 600;
+}
+
+.timeline-item-body span {
+    color: var(--color-muted);
+    font-size: 0.8rem;
+}
+
+.timeline-item-actions {
+    display: flex;
+    gap: 0.35rem;
+    flex-shrink: 0;
+}
+
+.timeline-item-actions .btn-icon {
+    padding: 0.25rem 0.5rem;
+    min-width: 2rem;
+}

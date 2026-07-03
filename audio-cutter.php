@@ -3,7 +3,7 @@ require_once __DIR__ . '/config.php';
 
 $meta = page_meta(
     'Audio Cutter Online — Trim MP3, WAV, OGG Free',
-    'Free online audio cutter. Trim MP3, WAV, OGG, and more with waveform preview. Fade in/out, loop selection, export MP3 or WAV — all in your browser.'
+    'Free online audio cutter. Trim, rearrange clips, insert silence, remove blank gaps, and export MP3 or WAV — all in your browser.'
 );
 
 require_once __DIR__ . '/includes/header.php';
@@ -12,13 +12,13 @@ require_once __DIR__ . '/includes/header.php';
 <div class="container tool-page">
     <div class="tool-page-header">
         <h1>Audio Cutter</h1>
-        <p>Trim and cut audio files locally in your browser. Drag on the waveform to select the part you want to keep.</p>
+        <p>Select parts on the waveform, build a timeline, drag clips to reorder, add silence gaps, or auto-remove blank areas — then export.</p>
     </div>
 
     <div class="tool-panel media-tool-panel">
         <div class="tool-steps" aria-label="How to use">
             <span class="tool-step active" data-step="1"><strong>1</strong> Upload</span>
-            <span class="tool-step" data-step="2"><strong>2</strong> Select range</span>
+            <span class="tool-step" data-step="2"><strong>2</strong> Edit clips</span>
             <span class="tool-step" data-step="3"><strong>3</strong> Export</span>
         </div>
 
@@ -31,7 +31,8 @@ require_once __DIR__ . '/includes/header.php';
         <div id="audio-controls" class="hidden">
             <div class="media-toolbar">
                 <button type="button" class="btn btn-secondary btn-sm" id="btn-play" title="Play / Pause">▶ Play</button>
-                <button type="button" class="btn btn-secondary btn-sm" id="btn-play-selection" title="Play selected range only">▶ Selection</button>
+                <button type="button" class="btn btn-secondary btn-sm" id="btn-play-selection">▶ Selection</button>
+                <button type="button" class="btn btn-secondary btn-sm" id="btn-play-timeline">▶ Timeline</button>
                 <button type="button" class="btn btn-secondary btn-sm" id="btn-stop">⏹ Stop</button>
                 <label class="checkbox-inline">
                     <input type="checkbox" id="loop-selection"> Loop selection
@@ -45,15 +46,15 @@ require_once __DIR__ . '/includes/header.php';
             <div class="waveform-wrap" id="waveform-wrap">
                 <div id="waveform"></div>
             </div>
-            <p class="text-muted waveform-hint">Drag the highlighted region edges or click and drag on the waveform to create a new selection.</p>
+            <p class="text-muted waveform-hint">Drag on the waveform to select a part. Use the timeline below to combine clips, add gaps, or remove silence.</p>
 
             <div class="time-range-panel">
                 <div class="form-group">
-                    <label for="start-time">Start</label>
+                    <label for="start-time">Selection start</label>
                     <input type="text" id="start-time" inputmode="decimal" placeholder="0:00.0" aria-label="Start time">
                 </div>
                 <div class="form-group">
-                    <label for="end-time">End</label>
+                    <label for="end-time">Selection end</label>
                     <input type="text" id="end-time" inputmode="decimal" placeholder="0:00.0" aria-label="End time">
                 </div>
                 <div class="form-group">
@@ -64,6 +65,39 @@ require_once __DIR__ . '/includes/header.php';
                     <label>&nbsp;</label>
                     <button type="button" class="btn btn-secondary btn-sm" id="btn-set-from-playhead">Set start/end from playhead</button>
                 </div>
+            </div>
+
+            <div class="timeline-editor">
+                <div class="timeline-editor-header">
+                    <h3>Output timeline</h3>
+                    <p class="text-muted">Drag clips to reorder. Silence appears as gaps in the final audio.</p>
+                </div>
+                <div class="timeline-toolbar">
+                    <button type="button" class="btn btn-secondary btn-sm" id="btn-add-clip">+ Add selection to timeline</button>
+                    <button type="button" class="btn btn-secondary btn-sm" id="btn-add-silence">+ Insert silence</button>
+                    <button type="button" class="btn btn-secondary btn-sm" id="btn-remove-silence">Remove blank areas</button>
+                    <button type="button" class="btn btn-secondary btn-sm" id="btn-clear-timeline">Clear timeline</button>
+                </div>
+                <div class="form-row three-col timeline-options">
+                    <div class="form-group">
+                        <label for="silence-duration">Silence gap (seconds)</label>
+                        <input type="number" id="silence-duration" min="0.1" max="60" step="0.1" value="1">
+                    </div>
+                    <div class="form-group">
+                        <label for="silence-threshold">Blank detection sensitivity</label>
+                        <select id="silence-threshold">
+                            <option value="0.008">High (more cuts)</option>
+                            <option value="0.015" selected>Medium</option>
+                            <option value="0.03">Low (less cuts)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="min-silence">Min blank length (sec)</label>
+                        <input type="number" id="min-silence" min="0.1" max="5" step="0.1" value="0.3">
+                    </div>
+                </div>
+                <ul id="timeline-list" class="timeline-list" aria-label="Output timeline clips"></ul>
+                <p id="timeline-empty" class="text-muted timeline-empty">No clips yet — select a range and click “Add selection to timeline”, or use “Remove blank areas”.</p>
             </div>
 
             <div class="form-row three-col">
@@ -112,11 +146,11 @@ require_once __DIR__ . '/includes/header.php';
                 </div>
                 <div class="stat-box">
                     <div class="value" id="stat-duration">—</div>
-                    <div class="label">Full duration</div>
+                    <div class="label">Source duration</div>
                 </div>
                 <div class="stat-box">
-                    <div class="value" id="stat-selection">—</div>
-                    <div class="label">Selected length</div>
+                    <div class="value" id="stat-output">—</div>
+                    <div class="label">Output length</div>
                 </div>
             </div>
 
@@ -126,7 +160,7 @@ require_once __DIR__ . '/includes/header.php';
             </div>
 
             <div class="btn-row">
-                <button type="button" class="btn btn-primary" id="btn-export">Download trimmed audio</button>
+                <button type="button" class="btn btn-primary" id="btn-export">Download edited audio</button>
                 <button type="button" class="btn btn-secondary" id="btn-select-all">Select all</button>
                 <button type="button" class="btn btn-secondary" id="btn-reset">New file</button>
             </div>

@@ -9,14 +9,29 @@ $(function () {
     var $exportProgress = $('#export-progress');
     var $exportProgressFill = $('#export-progress-fill');
     var $exportProgressText = $('#export-progress-text');
+    var $timelineList = $('#timeline-list');
 
     var wavesurfer = null;
     var regionsPlugin = null;
     var activeRegion = null;
     var originalFile = null;
-    var loopInterval = null;
     var isPlayingSelection = false;
     var updatingFromRegion = false;
+    var zoomLevel = 50;
+
+    var audioContext = null;
+    var decodedBuffer = null;
+    var timelineClips = [];
+    var clipIdCounter = 0;
+    var previewSources = [];
+    var dragClipId = null;
+
+    var REGION_COLORS = [
+        'rgba(37, 99, 235, 0.28)',
+        'rgba(16, 185, 129, 0.28)',
+        'rgba(245, 158, 11, 0.28)',
+        'rgba(139, 92, 246, 0.28)'
+    ];
 
     function formatBytes(bytes) {
         if (bytes < 1024) return bytes + ' B';
@@ -64,6 +79,11 @@ $(function () {
         $('.tool-step[data-step="' + step + '"]').addClass('active');
     }
 
+    function nextClipId() {
+        clipIdCounter += 1;
+        return 'clip-' + clipIdCounter;
+    }
+
     function getDuration() {
         return wavesurfer ? wavesurfer.getDuration() : 0;
     }
@@ -78,11 +98,25 @@ $(function () {
         };
     }
 
+    function calcTimelineDuration() {
+        var total = 0;
+        timelineClips.forEach(function (clip) {
+            if (clip.type === 'silence') {
+                total += clip.duration;
+            } else {
+                total += clip.srcEnd - clip.srcStart;
+            }
+        });
+        return total;
+    }
+
     function updateStats() {
         var sel = getSelection();
-        var len = Math.max(0, sel.end - sel.start);
-        $('#stat-selection').text(formatTime(len));
-        $('#duration-display').val(formatTime(len));
+        var selLen = Math.max(0, sel.end - sel.start);
+        $('#duration-display').val(formatTime(selLen));
+
+        var outLen = timelineClips.length > 0 ? calcTimelineDuration() : selLen;
+        $('#stat-output').text(formatTime(outLen));
     }
 
     function syncInputsFromRegion() {
@@ -95,7 +129,7 @@ $(function () {
     }
 
     function applyInputsToRegion() {
-        if (updatingFromRegion || !wavesurfer) return;
+        if (updatingFromRegion || !wavesurfer || !activeRegion) return;
         var dur = getDuration();
         var start = parseTime($('#start-time').val());
         var end = parseTime($('#end-time').val());
@@ -103,33 +137,50 @@ $(function () {
         if (isNaN(end)) end = dur;
         start = Math.max(0, Math.min(start, dur));
         end = Math.max(start + 0.1, Math.min(end, dur));
-
-        if (activeRegion) {
-            activeRegion.update({ start: start, end: end });
-        } else {
-            createRegion(start, end);
-        }
+        activeRegion.update({ start: start, end: end });
         updateStats();
     }
 
-    function createRegion(start, end) {
+    function highlightActiveRegion() {
+        if (!wavesurfer) return;
+        var regions = wavesurfer.regions ? wavesurfer.regions.list : {};
+        Object.keys(regions).forEach(function (id) {
+            var r = regions[id];
+            var isActive = activeRegion && r === activeRegion;
+            r.update({
+                color: isActive ? 'rgba(37, 99, 235, 0.38)' : 'rgba(37, 99, 235, 0.18)'
+            });
+        });
+    }
+
+    function createRegion(start, end, activate) {
         if (!wavesurfer) return null;
-        if (activeRegion) {
-            activeRegion.remove();
-        }
-        activeRegion = wavesurfer.addRegion({
+        var color = REGION_COLORS[Object.keys(wavesurfer.regions.list || {}).length % REGION_COLORS.length];
+        var region = wavesurfer.addRegion({
             start: start,
             end: end,
-            color: 'rgba(37, 99, 235, 0.25)',
+            color: color,
             drag: true,
             resize: true
         });
-        syncInputsFromRegion();
-        return activeRegion;
+        if (activate !== false) {
+            activeRegion = region;
+            syncInputsFromRegion();
+            highlightActiveRegion();
+        }
+        return region;
+    }
+
+    function stopPreviewSources() {
+        previewSources.forEach(function (src) {
+            try { src.stop(); } catch (e) { /* ignore */ }
+        });
+        previewSources = [];
     }
 
     function destroyWaveSurfer() {
-        stopLoop();
+        stopPreviewSources();
+        isPlayingSelection = false;
         if (wavesurfer) {
             wavesurfer.destroy();
             wavesurfer = null;
@@ -138,9 +189,17 @@ $(function () {
         activeRegion = null;
     }
 
+    async function decodeAudioFile(file) {
+        var arrayBuffer = await file.arrayBuffer();
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        decodedBuffer = await audioContext.decodeAudioData(arrayBuffer.slice(0));
+    }
+
     function initWaveSurfer(file) {
         destroyWaveSurfer();
         $('#waveform').empty();
+        timelineClips = [];
+        renderTimelineUI();
 
         regionsPlugin = WaveSurfer.regions.create({
             dragSelection: true,
@@ -167,6 +226,7 @@ $(function () {
             createRegion(0, dur);
             setStep(2);
             hideMessages();
+            updateStats();
         });
 
         wavesurfer.on('error', function (err) {
@@ -201,40 +261,233 @@ $(function () {
         });
 
         wavesurfer.on('region-created', function (region) {
-            if (activeRegion && activeRegion !== region) {
-                activeRegion.remove();
-            }
             activeRegion = region;
             syncInputsFromRegion();
+            highlightActiveRegion();
         });
 
-        wavesurfer.on('region-updated', syncInputsFromRegion);
-        wavesurfer.on('region-update-end', syncInputsFromRegion);
+        wavesurfer.on('region-click', function (region) {
+            activeRegion = region;
+            syncInputsFromRegion();
+            highlightActiveRegion();
+        });
+
+        wavesurfer.on('region-updated', function (region) {
+            if (activeRegion === region) syncInputsFromRegion();
+        });
+
+        wavesurfer.on('region-update-end', function (region) {
+            if (activeRegion === region) syncInputsFromRegion();
+        });
 
         wavesurfer.loadBlob(file);
     }
 
-    function stopLoop() {
-        isPlayingSelection = false;
-        if (loopInterval) {
-            clearInterval(loopInterval);
-            loopInterval = null;
-        }
+    function renderTimelineUI() {
+        $timelineList.empty();
+        timelineClips.forEach(function (clip, index) {
+            var $li = $('<li class="timeline-item"></li>');
+            $li.attr('draggable', 'true');
+            $li.attr('data-id', clip.id);
+
+            if (clip.type === 'silence') {
+                $li.addClass('is-silence');
+                $li.append(
+                    '<span class="timeline-item-handle" aria-hidden="true">⋮⋮</span>' +
+                    '<div class="timeline-item-body">' +
+                    '<strong>Silence — ' + clip.duration.toFixed(1) + 's</strong>' +
+                    '<span>Blank gap in output</span></div>'
+                );
+            } else {
+                var len = clip.srcEnd - clip.srcStart;
+                $li.append(
+                    '<span class="timeline-item-handle" aria-hidden="true">⋮⋮</span>' +
+                    '<div class="timeline-item-body">' +
+                    '<strong>Audio clip ' + (index + 1) + '</strong>' +
+                    '<span>From source ' + formatTime(clip.srcStart) + ' → ' + formatTime(clip.srcEnd) +
+                    ' (' + formatTime(len) + ')</span></div>'
+                );
+            }
+
+            var $actions = $('<div class="timeline-item-actions"></div>');
+            if (index > 0) {
+                $actions.append('<button type="button" class="btn btn-secondary btn-sm btn-icon btn-move-up" title="Move up">↑</button>');
+            }
+            if (index < timelineClips.length - 1) {
+                $actions.append('<button type="button" class="btn btn-secondary btn-sm btn-icon btn-move-down" title="Move down">↓</button>');
+            }
+            $actions.append('<button type="button" class="btn btn-secondary btn-sm btn-icon btn-remove-clip" title="Remove">×</button>');
+            $li.append($actions);
+            $timelineList.append($li);
+        });
+        updateStats();
     }
 
-    function loadFile(file) {
-        if (!file || !file.type.match(/^audio\//) && !file.name.match(/\.(mp3|wav|ogg|m4a|flac|aac|webm)$/i)) {
-            showError('Please select an audio file (MP3, WAV, OGG, M4A, FLAC).');
+    function moveClip(id, direction) {
+        var idx = timelineClips.findIndex(function (c) { return c.id === id; });
+        if (idx < 0) return;
+        var newIdx = idx + direction;
+        if (newIdx < 0 || newIdx >= timelineClips.length) return;
+        var item = timelineClips.splice(idx, 1)[0];
+        timelineClips.splice(newIdx, 0, item);
+        renderTimelineUI();
+        setStep(2);
+    }
+
+    function removeClip(id) {
+        timelineClips = timelineClips.filter(function (c) { return c.id !== id; });
+        renderTimelineUI();
+    }
+
+    function addSelectionToTimeline() {
+        var sel = getSelection();
+        if (sel.end - sel.start < 0.1) {
+            showError('Select at least 0.1 seconds on the waveform first.');
+            return;
+        }
+        timelineClips.push({
+            id: nextClipId(),
+            type: 'segment',
+            srcStart: sel.start,
+            srcEnd: sel.end
+        });
+        renderTimelineUI();
+        setStep(2);
+        hideMessages();
+        showInfo('Clip added to timeline. Drag rows to reorder, or insert silence between clips.');
+    }
+
+    function insertSilence() {
+        var duration = parseFloat($('#silence-duration').val()) || 1;
+        if (duration < 0.1) {
+            showError('Silence must be at least 0.1 seconds.');
+            return;
+        }
+        timelineClips.push({
+            id: nextClipId(),
+            type: 'silence',
+            duration: duration
+        });
+        renderTimelineUI();
+        setStep(2);
+        showInfo('Silence gap added (' + duration.toFixed(1) + 's).');
+    }
+
+    function detectNonSilentSegments(buffer, threshold, minSilenceSec) {
+        var rate = buffer.sampleRate;
+        var data = buffer.getChannelData(0);
+        var windowSize = Math.max(1, Math.floor(rate * 0.02));
+        var minSilenceSamples = Math.floor(minSilenceSec * rate);
+        var segments = [];
+        var inSound = false;
+        var segStart = 0;
+        var silenceRun = 0;
+
+        function rms(start) {
+            var sum = 0;
+            var end = Math.min(start + windowSize, data.length);
+            for (var i = start; i < end; i++) {
+                sum += data[i] * data[i];
+            }
+            return Math.sqrt(sum / (end - start));
+        }
+
+        for (var i = 0; i < data.length; i += windowSize) {
+            var level = rms(i);
+            if (level >= threshold) {
+                if (!inSound) {
+                    segStart = i / rate;
+                    inSound = true;
+                }
+                silenceRun = 0;
+            } else if (inSound) {
+                silenceRun += windowSize;
+                if (silenceRun >= minSilenceSamples) {
+                    segments.push({ start: segStart, end: (i - silenceRun) / rate });
+                    inSound = false;
+                    silenceRun = 0;
+                }
+            }
+        }
+
+        if (inSound) {
+            segments.push({ start: segStart, end: buffer.duration });
+        }
+
+        return segments.filter(function (s) { return s.end - s.start >= 0.1; });
+    }
+
+    function removeBlankAreas() {
+        if (!decodedBuffer) {
+            showError('Audio is still loading. Wait a moment and try again.');
             return;
         }
 
-        hideMessages();
-        originalFile = file;
-        $('#stat-original').text(formatBytes(file.size));
-        $controls.removeClass('hidden');
-        $dropZone.addClass('hidden');
-        setStep(1);
-        initWaveSurfer(file);
+        var threshold = parseFloat($('#silence-threshold').val()) || 0.015;
+        var minSilence = parseFloat($('#min-silence').val()) || 0.3;
+        var segments = detectNonSilentSegments(decodedBuffer, threshold, minSilence);
+
+        if (segments.length === 0) {
+            showError('No non-blank audio found. Try lowering sensitivity.');
+            return;
+        }
+
+        timelineClips = segments.map(function (seg) {
+            return {
+                id: nextClipId(),
+                type: 'segment',
+                srcStart: seg.start,
+                srcEnd: seg.end
+            };
+        });
+
+        renderTimelineUI();
+        setStep(2);
+        showInfo('Removed blank areas — ' + segments.length + ' clip(s) on timeline. Drag to reorder or add silence gaps.');
+    }
+
+    function clearTimeline() {
+        timelineClips = [];
+        renderTimelineUI();
+        showInfo('Timeline cleared.');
+    }
+
+    function resumeAudioIfNeeded() {
+        if (audioContext && audioContext.state === 'suspended') {
+            audioContext.resume();
+        }
+        if (wavesurfer && wavesurfer.backend) {
+            var ac = wavesurfer.backend.ac || wavesurfer.backend.audioContext;
+            if (ac && ac.state === 'suspended') ac.resume();
+        }
+    }
+
+    function playTimelinePreview() {
+        if (!decodedBuffer || timelineClips.length === 0) {
+            showError('Add clips to the timeline first.');
+            return;
+        }
+
+        stopPreviewSources();
+        if (wavesurfer) wavesurfer.pause();
+        resumeAudioIfNeeded();
+
+        var when = audioContext.currentTime + 0.05;
+        timelineClips.forEach(function (clip) {
+            if (clip.type === 'silence') {
+                when += clip.duration;
+                return;
+            }
+            var src = audioContext.createBufferSource();
+            src.buffer = decodedBuffer;
+            src.connect(audioContext.destination);
+            var dur = clip.srcEnd - clip.srcStart;
+            src.start(when, clip.srcStart, dur);
+            previewSources.push(src);
+            when += dur;
+        });
+
+        showInfo('Playing timeline preview…');
     }
 
     function applyFade(buffer, fadeIn, fadeOut) {
@@ -248,11 +501,11 @@ $(function () {
             var data = buffer.getChannelData(c);
             var i;
             for (i = 0; i < fadeInSamples && i < length; i++) {
-                data[i] *= i / fadeInSamples;
+                data[i] *= fadeInSamples > 0 ? i / fadeInSamples : 1;
             }
             for (i = 0; i < fadeOutSamples && i < length; i++) {
                 var idx = length - 1 - i;
-                data[idx] *= i / fadeOutSamples;
+                data[idx] *= fadeOutSamples > 0 ? i / fadeOutSamples : 1;
             }
         }
         return buffer;
@@ -269,10 +522,41 @@ $(function () {
         return buffer;
     }
 
+    function copySegmentBuffer(ctx, source, srcStart, srcEnd) {
+        var rate = source.sampleRate;
+        var startSample = Math.floor(srcStart * rate);
+        var endSample = Math.floor(srcEnd * rate);
+        var length = endSample - startSample;
+        var out = ctx.createBuffer(source.numberOfChannels, length, rate);
+        for (var c = 0; c < source.numberOfChannels; c++) {
+            out.getChannelData(c).set(source.getChannelData(c).subarray(startSample, endSample));
+        }
+        return out;
+    }
+
+    function createSilenceBuffer(ctx, source, durationSec) {
+        var length = Math.floor(durationSec * source.sampleRate);
+        return ctx.createBuffer(source.numberOfChannels, length, source.sampleRate);
+    }
+
+    function concatBuffers(ctx, parts) {
+        var channels = parts[0].numberOfChannels;
+        var rate = parts[0].sampleRate;
+        var total = parts.reduce(function (sum, p) { return sum + p.length; }, 0);
+        var out = ctx.createBuffer(channels, total, rate);
+        var offset = 0;
+        parts.forEach(function (part) {
+            for (var c = 0; c < channels; c++) {
+                out.getChannelData(c).set(part.getChannelData(c), offset);
+            }
+            offset += part.length;
+        });
+        return out;
+    }
+
     function bufferToWav(buffer) {
         var numChannels = buffer.numberOfChannels;
         var sampleRate = buffer.sampleRate;
-        var format = 1;
         var bitDepth = 16;
         var bytesPerSample = bitDepth / 8;
         var blockAlign = numChannels * bytesPerSample;
@@ -292,7 +576,7 @@ $(function () {
         writeString(8, 'WAVE');
         writeString(12, 'fmt ');
         view.setUint32(16, 16, true);
-        view.setUint16(20, format, true);
+        view.setUint16(20, 1, true);
         view.setUint16(22, numChannels, true);
         view.setUint32(24, sampleRate, true);
         view.setUint32(28, sampleRate * blockAlign, true);
@@ -302,14 +586,9 @@ $(function () {
         view.setUint32(40, dataSize, true);
 
         var offset = 44;
-        var channelData = [];
-        for (var ch = 0; ch < numChannels; ch++) {
-            channelData.push(buffer.getChannelData(ch));
-        }
-
         for (var i = 0; i < length; i++) {
             for (var c = 0; c < numChannels; c++) {
-                var sample = Math.max(-1, Math.min(1, channelData[c][i]));
+                var sample = Math.max(-1, Math.min(1, buffer.getChannelData(c)[i]));
                 view.setInt16(offset, sample < 0 ? sample * 0x8000 : sample * 0x7fff, true);
                 offset += 2;
             }
@@ -323,32 +602,25 @@ $(function () {
         var sampleRate = buffer.sampleRate;
         var left = buffer.getChannelData(0);
         var right = channels > 1 ? buffer.getChannelData(1) : left;
-
-        var samples = new Int16Array(buffer.length);
-        for (var i = 0; i < buffer.length; i++) {
-            var l = Math.max(-1, Math.min(1, left[i]));
-            samples[i] = l < 0 ? l * 0x8000 : l * 0x7fff;
-        }
-
         var mp3encoder = new lamejs.Mp3Encoder(channels, sampleRate, bitrate);
         var mp3Data = [];
         var blockSize = 1152;
-        var chLeft = samples;
+        var chLeft = new Int16Array(buffer.length);
         var chRight = channels > 1 ? new Int16Array(buffer.length) : chLeft;
 
-        if (channels > 1) {
-            for (var j = 0; j < buffer.length; j++) {
-                var r = Math.max(-1, Math.min(1, right[j]));
-                chRight[j] = r < 0 ? r * 0x8000 : r * 0x7fff;
+        for (var i = 0; i < buffer.length; i++) {
+            var l = Math.max(-1, Math.min(1, left[i]));
+            chLeft[i] = l < 0 ? l * 0x8000 : l * 0x7fff;
+            if (channels > 1) {
+                var r = Math.max(-1, Math.min(1, right[i]));
+                chRight[i] = r < 0 ? r * 0x8000 : r * 0x7fff;
             }
         }
 
-        for (var k = 0; k < samples.length; k += blockSize) {
-            var leftChunk = chLeft.subarray(k, k + blockSize);
-            var rightChunk = chRight.subarray(k, k + blockSize);
+        for (var k = 0; k < buffer.length; k += blockSize) {
             var mp3buf = channels > 1
-                ? mp3encoder.encodeBuffer(leftChunk, rightChunk)
-                : mp3encoder.encodeBuffer(leftChunk);
+                ? mp3encoder.encodeBuffer(chLeft.subarray(k, k + blockSize), chRight.subarray(k, k + blockSize))
+                : mp3encoder.encodeBuffer(chLeft.subarray(k, k + blockSize));
             if (mp3buf.length > 0) mp3Data.push(mp3buf);
         }
 
@@ -369,68 +641,61 @@ $(function () {
         $exportProgressFill.css('width', '0%');
     }
 
+    async function buildOutputBuffer() {
+        if (!decodedBuffer) {
+            if (originalFile) await decodeAudioFile(originalFile);
+        }
+        if (!decodedBuffer) throw new Error('Could not decode audio.');
+
+        var ctx = audioContext || new (window.AudioContext || window.webkitAudioContext)();
+        var parts = [];
+
+        if (timelineClips.length > 0) {
+            timelineClips.forEach(function (clip) {
+                if (clip.type === 'silence') {
+                    parts.push(createSilenceBuffer(ctx, decodedBuffer, clip.duration));
+                } else {
+                    parts.push(copySegmentBuffer(ctx, decodedBuffer, clip.srcStart, clip.srcEnd));
+                }
+            });
+        } else {
+            var sel = getSelection();
+            if (sel.end - sel.start < 0.1) {
+                throw new Error('Add clips to the timeline or select a range to export.');
+            }
+            parts.push(copySegmentBuffer(ctx, decodedBuffer, sel.start, sel.end));
+        }
+
+        var merged = concatBuffers(ctx, parts);
+        var fadeIn = parseFloat($('#fade-in').val()) || 0;
+        var fadeOut = parseFloat($('#fade-out').val()) || 0;
+        var maxFade = merged.duration / 2;
+        applyFade(merged, Math.min(fadeIn, maxFade), Math.min(fadeOut, maxFade));
+        applyGain(merged, parseFloat($('#volume-gain').val()) || 1);
+        return merged;
+    }
+
     async function exportAudio() {
         if (!originalFile || !wavesurfer) return;
 
-        var sel = getSelection();
-        if (sel.end - sel.start < 0.1) {
-            showError('Selection must be at least 0.1 seconds.');
-            return;
-        }
-
         hideMessages();
-        setExportProgress(0.1, 'Decoding audio…');
+        setExportProgress(0.1, 'Building output…');
         $('#btn-export').prop('disabled', true);
 
         try {
-            var arrayBuffer = await originalFile.arrayBuffer();
-            var audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            var decoded = await audioContext.decodeAudioData(arrayBuffer.slice(0));
-
-            var rate = decoded.sampleRate;
-            var startSample = Math.floor(sel.start * rate);
-            var endSample = Math.floor(sel.end * rate);
-            var length = endSample - startSample;
-
-            if (length <= 0) {
-                throw new Error('Invalid selection range.');
-            }
-
-            setExportProgress(0.35, 'Trimming selection…');
-
-            var trimmed = audioContext.createBuffer(
-                decoded.numberOfChannels,
-                length,
-                rate
-            );
-
-            for (var c = 0; c < decoded.numberOfChannels; c++) {
-                trimmed.getChannelData(c).set(
-                    decoded.getChannelData(c).subarray(startSample, endSample)
-                );
-            }
-
-            var fadeIn = parseFloat($('#fade-in').val()) || 0;
-            var fadeOut = parseFloat($('#fade-out').val()) || 0;
-            var maxFade = (sel.end - sel.start) / 2;
-            fadeIn = Math.min(fadeIn, maxFade);
-            fadeOut = Math.min(fadeOut, maxFade);
-
-            applyFade(trimmed, fadeIn, fadeOut);
-            applyGain(trimmed, parseFloat($('#volume-gain').val()) || 1);
+            var output = await buildOutputBuffer();
 
             setExportProgress(0.65, 'Encoding…');
-
             var format = $('#export-format').val();
             var blob;
             var ext;
 
             if (format === 'mp3') {
                 var bitrate = parseInt($('#mp3-bitrate').val(), 10) || 192;
-                blob = bufferToMp3(trimmed, bitrate);
+                blob = bufferToMp3(output, bitrate);
                 ext = 'mp3';
             } else {
-                blob = bufferToWav(trimmed);
+                blob = bufferToWav(output);
                 ext = 'wav';
             }
 
@@ -441,13 +706,13 @@ $(function () {
             var url = URL.createObjectURL(blob);
             var a = document.createElement('a');
             a.href = url;
-            a.download = baseName + '-trimmed.' + ext;
+            a.download = baseName + '-edited.' + ext;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
 
-            showInfo('Download started — ' + formatBytes(blob.size) + ' trimmed file.');
+            showInfo('Download started — ' + formatBytes(blob.size) + ', ' + formatTime(output.duration) + ' long.');
         } catch (err) {
             showError('Export failed: ' + (err.message || 'Unknown error'));
         } finally {
@@ -459,13 +724,39 @@ $(function () {
     function resetTool() {
         destroyWaveSurfer();
         originalFile = null;
+        decodedBuffer = null;
+        audioContext = null;
+        timelineClips = [];
+        renderTimelineUI();
         $controls.addClass('hidden');
         $dropZone.removeClass('hidden');
         $fileInput.val('');
         hideMessages();
         hideExportProgress();
-        $('#stat-original, #stat-duration, #stat-selection').text('—');
+        $('#stat-original, #stat-duration, #stat-output').text('—');
         setStep(1);
+    }
+
+    async function loadFile(file) {
+        if (!file || !file.type.match(/^audio\//) && !file.name.match(/\.(mp3|wav|ogg|m4a|flac|aac|webm)$/i)) {
+            showError('Please select an audio file (MP3, WAV, OGG, M4A, FLAC).');
+            return;
+        }
+
+        hideMessages();
+        originalFile = file;
+        decodedBuffer = null;
+        $('#stat-original').text(formatBytes(file.size));
+        $controls.removeClass('hidden');
+        $dropZone.addClass('hidden');
+        setStep(1);
+
+        initWaveSurfer(file);
+        try {
+            await decodeAudioFile(file);
+        } catch (e) {
+            console.warn('Decode for timeline failed:', e);
+        }
     }
 
     // Drop zone
@@ -484,40 +775,34 @@ $(function () {
         if (this.files.length) loadFile(this.files[0]);
     });
 
-    function resumeAudioIfNeeded() {
-        if (!wavesurfer || !wavesurfer.backend) return;
-        var ac = wavesurfer.backend.ac || wavesurfer.backend.audioContext;
-        if (ac && ac.state === 'suspended') {
-            ac.resume();
-        }
-    }
-
     // Playback
     $('#btn-play').on('click', function () {
         if (!wavesurfer) return;
+        stopPreviewSources();
         resumeAudioIfNeeded();
         wavesurfer.playPause();
-        stopLoop();
         isPlayingSelection = false;
     });
 
     $('#btn-play-selection').on('click', function () {
         if (!wavesurfer || !activeRegion) return;
+        stopPreviewSources();
         resumeAudioIfNeeded();
         isPlayingSelection = true;
         wavesurfer.play(activeRegion.start, activeRegion.end);
     });
 
+    $('#btn-play-timeline').on('click', function () {
+        playTimelinePreview();
+    });
+
     $('#btn-stop').on('click', function () {
-        if (!wavesurfer) return;
-        wavesurfer.stop();
-        stopLoop();
+        stopPreviewSources();
+        if (wavesurfer) wavesurfer.stop();
+        isPlayingSelection = false;
         $('#btn-play').text('▶ Play');
     });
 
-    var zoomLevel = 50;
-
-    // Zoom
     $('#btn-zoom-in').on('click', function () {
         if (!wavesurfer) return;
         zoomLevel = Math.min(500, zoomLevel * 1.5);
@@ -534,7 +819,6 @@ $(function () {
         wavesurfer.zoom(0);
     });
 
-    // Time inputs
     $('#start-time, #end-time').on('change blur', applyInputsToRegion);
 
     $('#btn-set-from-playhead').on('click', function () {
@@ -549,13 +833,64 @@ $(function () {
             } else {
                 activeRegion.update({ end: t });
             }
+            syncInputsFromRegion();
         }
-        syncInputsFromRegion();
     });
 
     $('#btn-select-all').on('click', function () {
         if (!wavesurfer) return;
+        if (activeRegion) activeRegion.remove();
         createRegion(0, getDuration());
+    });
+
+    $('#btn-add-clip').on('click', addSelectionToTimeline);
+    $('#btn-add-silence').on('click', insertSilence);
+    $('#btn-remove-silence').on('click', removeBlankAreas);
+    $('#btn-clear-timeline').on('click', clearTimeline);
+
+    // Timeline drag reorder
+    $timelineList.on('dragstart', '.timeline-item', function (e) {
+        dragClipId = $(this).data('id');
+        e.originalEvent.dataTransfer.effectAllowed = 'move';
+        $(this).addClass('drag-over');
+    });
+
+    $timelineList.on('dragend', '.timeline-item', function () {
+        dragClipId = null;
+        $('.timeline-item').removeClass('drag-over');
+    });
+
+    $timelineList.on('dragover', '.timeline-item', function (e) {
+        e.preventDefault();
+        e.originalEvent.dataTransfer.dropEffect = 'move';
+        $('.timeline-item').removeClass('drag-over');
+        $(this).addClass('drag-over');
+    });
+
+    $timelineList.on('drop', '.timeline-item', function (e) {
+        e.preventDefault();
+        var targetId = $(this).data('id');
+        if (!dragClipId || dragClipId === targetId) return;
+
+        var fromIdx = timelineClips.findIndex(function (c) { return c.id === dragClipId; });
+        var toIdx = timelineClips.findIndex(function (c) { return c.id === targetId; });
+        if (fromIdx < 0 || toIdx < 0) return;
+
+        var item = timelineClips.splice(fromIdx, 1)[0];
+        timelineClips.splice(toIdx, 0, item);
+        renderTimelineUI();
+        $('.timeline-item').removeClass('drag-over');
+        dragClipId = null;
+    });
+
+    $timelineList.on('click', '.btn-move-up', function () {
+        moveClip($(this).closest('.timeline-item').data('id'), -1);
+    });
+    $timelineList.on('click', '.btn-move-down', function () {
+        moveClip($(this).closest('.timeline-item').data('id'), 1);
+    });
+    $timelineList.on('click', '.btn-remove-clip', function () {
+        removeClip($(this).closest('.timeline-item').data('id'));
     });
 
     $('#btn-export').on('click', exportAudio);

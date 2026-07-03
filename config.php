@@ -4,6 +4,11 @@
  * Change these values when you buy your domain or rebrand.
  */
 
+if (defined('QUICKTOOLS_CONFIG_LOADED')) {
+    return;
+}
+define('QUICKTOOLS_CONFIG_LOADED', true);
+
 define('SITE_NAME', 'QuickTools');
 define('SITE_DOMAIN', 'usetoolsweb.com');
 define('SITE_TAGLINE', 'Free Online Tools — Fast, Simple, Private');
@@ -98,8 +103,6 @@ $TOOLS = [
     ['slug' => 'card-validator', 'title' => 'Credit Card Validator', 'description' => 'Validate credit card numbers using the Luhn algorithm.', 'icon' => '💳', 'category' => 'utility'],
     ['slug' => 'iban-validator', 'title' => 'IBAN Validator', 'description' => 'Validate International Bank Account Numbers.', 'icon' => '🏛️', 'category' => 'utility'],
 ];
-
-define('ACC_WIDGET_LANG', 'en');
 
 /** SEO — default site keywords (used on home + appended on tool pages) */
 define('SITE_KEYWORDS', 'online tools, free tools, web utilities, usetoolsweb, quicktools, developer tools, image tools, calculators, text tools');

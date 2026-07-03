@@ -33,6 +33,13 @@ define('ACC_WIDGET_LANG', 'en');
 /** Google Analytics — set to empty string to disable */
 define('GA_MEASUREMENT_ID', 'G-1VF9ZJ7EPG');
 
+/** FFmpeg — leave empty to auto-detect; set full path on server if not in PATH (e.g. /usr/bin/ffmpeg) */
+define('FFMPEG_BINARY', '');
+
+/** Video cutter — max upload size (bytes) and temp storage */
+define('VIDEO_CUT_MAX_BYTES', 200 * 1024 * 1024);
+define('VIDEO_CUT_TMP_DIR', __DIR__ . '/tmp/video');
+
 /** Tool categories for home page grouping */
 $TOOL_CATEGORIES = [
     'image'      => 'Image Tools',
@@ -104,6 +111,8 @@ $TOOLS = [
     ['slug' => 'online-timer', 'title' => 'Online Timer', 'description' => 'Countdown timer and stopwatch in your browser.', 'icon' => '⏱️', 'category' => 'utility'],
     ['slug' => 'card-validator', 'title' => 'Credit Card Validator', 'description' => 'Validate credit card numbers using the Luhn algorithm.', 'icon' => '💳', 'category' => 'utility'],
     ['slug' => 'iban-validator', 'title' => 'IBAN Validator', 'description' => 'Validate International Bank Account Numbers.', 'icon' => '🏛️', 'category' => 'utility'],
+    ['slug' => 'video-cutter', 'title' => 'Video Cutter', 'description' => 'Trim and cut videos online. Preview in browser, export with FFmpeg — deleted after processing.', 'icon' => '🎬', 'category' => 'utility'],
+    ['slug' => 'audio-cutter', 'title' => 'Audio Cutter', 'description' => 'Trim audio with waveform preview. Fade in/out, loop selection, export MP3 or WAV.', 'icon' => '🎵', 'category' => 'utility'],
 ];
 
 /** SEO — default site keywords (used on home + appended on tool pages) */

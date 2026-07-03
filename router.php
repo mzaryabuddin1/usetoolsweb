@@ -16,6 +16,12 @@ if ($uri === '/robots.txt') {
     return true;
 }
 
+// API routes
+if ($uri === '/api/video-cut' || $uri === '/api/video-cut.php') {
+    require __DIR__ . '/api/video-cut.php';
+    return true;
+}
+
 // Serve static files as-is
 if ($uri !== '/' && is_file(__DIR__ . $uri)) {
     return false;

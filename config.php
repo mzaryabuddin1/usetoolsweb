@@ -69,6 +69,7 @@ $TOOL_CATEGORIES = [
 $TOOLS = [
     // --- Image ---
     ['slug' => 'compress-image', 'title' => 'Image Compressor', 'description' => 'Reduce JPG and PNG file size without uploading to a server.', 'icon' => '🖼️', 'category' => 'image'],
+    ['slug' => 'background-remover', 'title' => 'Background Remover', 'description' => 'Remove image backgrounds with AI — runs locally in your browser.', 'icon' => '✂️', 'category' => 'image'],
     ['slug' => 'resize-image', 'title' => 'Image Resizer', 'description' => 'Resize images to exact width and height or by percentage.', 'icon' => '📐', 'category' => 'image'],
     ['slug' => 'image-converter', 'title' => 'Image Converter', 'description' => 'Convert PNG, JPG, and WebP images to another format.', 'icon' => '🔄', 'category' => 'image'],
     ['slug' => 'image-to-base64', 'title' => 'Image to Base64', 'description' => 'Convert images to Base64 data URIs and back.', 'icon' => '🔢', 'category' => 'image'],

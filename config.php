@@ -170,9 +170,9 @@ define('SITE_KEYWORDS', 'online tools, free tools, web utilities, usetoolsweb, p
 /** OG default image — social share preview */
 define('SITE_OG_IMAGE', '/assets/images/og-default.png');
 
-/** Site logo (SVG) */
-define('SITE_LOGO', '/assets/images/logo.svg');
-define('SITE_LOGO_DARK', '/assets/images/logo-dark.svg');
+/** Site logo — day (light mode) and night (dark mode) */
+define('SITE_LOGO', '/assets/images/logo-light.png');
+define('SITE_LOGO_DARK', '/assets/images/logo-dark.png');
 define('SITE_LOGO_ALT', 'usetoolsweb');
 
 /** Favicons — UTW gradient icon set */

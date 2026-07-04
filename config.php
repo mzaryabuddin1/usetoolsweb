@@ -110,7 +110,7 @@ $TOOLS = [
     // --- Generators ---
     ['slug' => 'password-generator', 'title' => 'Password Generator', 'description' => 'Generate strong random passwords with custom length and options.', 'icon' => '🔐', 'category' => 'generator'],
     ['slug' => 'uuid-generator', 'title' => 'UUID Generator', 'description' => 'Generate random UUID v4 identifiers instantly.', 'icon' => '🆔', 'category' => 'generator'],
-    ['slug' => 'qr-code-generator', 'title' => 'QR Code Generator', 'description' => 'Create QR codes from text, URLs, or uploaded files. Share files via QR — auto-deleted after 10 days.', 'icon' => '📱', 'category' => 'generator'],
+    ['slug' => 'qr-code-generator', 'title' => 'QR Code Generator', 'description' => 'Custom QR codes — URL, WiFi, vCard, email, SMS, social, Bitcoin, logo & colors. Upload files for temporary QR sharing.', 'icon' => '📱', 'category' => 'generator'],
     ['slug' => 'qr-code-reader', 'title' => 'QR Code Reader', 'description' => 'Scan and decode QR codes using your camera.', 'icon' => '📷', 'category' => 'generator'],
     ['slug' => 'lorem-ipsum-generator', 'title' => 'Lorem Ipsum Generator', 'description' => 'Generate placeholder Lorem Ipsum text for designs and mockups.', 'icon' => '📄', 'category' => 'generator'],
     ['slug' => 'random-number-generator', 'title' => 'Random Number Generator', 'description' => 'Generate random numbers within a custom range.', 'icon' => '🎲', 'category' => 'generator'],

@@ -40,7 +40,7 @@ function qr_share_allowed_ext(string $filename): ?string
     $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
     $blocked = [
         'php', 'phtml', 'phar', 'php3', 'php4', 'php5', 'php7', 'php8',
-        'html', 'htm', 'svg', 'js', 'mjs', 'cjs', 'exe', 'bat', 'cmd', 'sh', 'ps1',
+        'html', 'htm', 'js', 'mjs', 'cjs', 'exe', 'bat', 'cmd', 'sh', 'ps1',
         'htaccess', 'cgi', 'pl', 'py', 'rb', 'asp', 'aspx', 'jsp',
     ];
     if ($ext === '' || in_array($ext, $blocked, true)) {
@@ -49,7 +49,7 @@ function qr_share_allowed_ext(string $filename): ?string
 
     $allowed = [
         'pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'txt', 'csv', 'rtf',
-        'jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'heic',
+        'jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'heic', 'svg',
         'zip', 'rar', '7z', 'tar', 'gz',
         'mp3', 'wav', 'ogg', 'm4a', 'aac', 'flac',
         'mp4', 'webm', 'mov', 'mkv', 'avi',
@@ -64,7 +64,7 @@ function qr_share_mime_for_ext(string $ext): string
     static $map = [
         'pdf'  => 'application/pdf',
         'jpg'  => 'image/jpeg', 'jpeg' => 'image/jpeg', 'png' => 'image/png',
-        'gif'  => 'image/gif', 'webp' => 'image/webp',
+        'gif'  => 'image/gif', 'webp' => 'image/webp', 'svg' => 'image/svg+xml',
         'zip'  => 'application/zip',
         'mp3'  => 'audio/mpeg', 'mp4' => 'video/mp4',
         'txt'  => 'text/plain', 'json' => 'application/json',
@@ -215,6 +215,9 @@ function qr_share_serve(string $token): void
     header('Content-Length: ' . filesize($path));
     header('Content-Disposition: attachment; filename="' . str_replace('"', '', $name) . '"');
     header('X-Content-Type-Options: nosniff');
+    if (($meta['ext'] ?? '') === 'svg') {
+        header('Content-Security-Policy: default-src \'none\'; sandbox');
+    }
     header('Cache-Control: no-store');
 
     readfile($path);

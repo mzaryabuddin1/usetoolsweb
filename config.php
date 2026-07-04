@@ -172,6 +172,7 @@ define('SITE_OG_IMAGE', '/assets/images/og-default.png');
 
 /** Site logo (SVG) */
 define('SITE_LOGO', '/assets/images/logo.svg');
+define('SITE_LOGO_DARK', '/assets/images/logo-dark.svg');
 define('SITE_LOGO_ALT', 'usetoolsweb');
 
 /** Favicons — UTW gradient icon set */

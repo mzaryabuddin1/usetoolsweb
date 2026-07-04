@@ -60,12 +60,21 @@ if (!isset($meta)) {
             <a href="<?= rtrim(SITE_URL, '/') ?>/" class="logo" aria-label="<?= htmlspecialchars(SITE_LOGO_ALT) ?> — Home">
                 <img
                     src="<?= SITE_LOGO ?>"
-                    alt="<?= htmlspecialchars(SITE_LOGO_ALT) ?>"
-                    class="logo-img"
+                    alt=""
+                    class="logo-img logo-img-light"
                     width="220"
                     height="36"
                     decoding="async"
                 >
+                <img
+                    src="<?= SITE_LOGO_DARK ?>"
+                    alt=""
+                    class="logo-img logo-img-dark"
+                    width="220"
+                    height="36"
+                    decoding="async"
+                >
+                <span class="sr-only"><?= htmlspecialchars(SITE_LOGO_ALT) ?></span>
             </a>
             <nav class="main-nav" aria-label="Main navigation">
                 <a href="<?= rtrim(SITE_URL, '/') ?>/">Home</a>

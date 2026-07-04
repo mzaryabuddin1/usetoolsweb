@@ -3,7 +3,9 @@
         <div class="container footer-inner">
             <div class="footer-brand">
                 <a href="<?= rtrim(SITE_URL, '/') ?>/" class="footer-logo">
-                    <img src="<?= SITE_LOGO ?>" alt="<?= htmlspecialchars(SITE_LOGO_ALT) ?>" width="180" height="30" loading="lazy">
+                    <img src="<?= SITE_LOGO ?>" alt="" class="logo-img-light" width="180" height="30" loading="lazy">
+                    <img src="<?= SITE_LOGO_DARK ?>" alt="" class="logo-img-dark" width="180" height="30" loading="lazy">
+                    <span class="sr-only"><?= htmlspecialchars(SITE_LOGO_ALT) ?></span>
                 </a>
                 <p><?= htmlspecialchars(SITE_TAGLINE) ?></p>
             </div>

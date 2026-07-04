@@ -3,7 +3,7 @@
  * FFmpeg helper — detect binary and run safe cut commands.
  */
 
-if (!defined('QUICKTOOLS_CONFIG_LOADED')) {
+if (!defined('SITE_CONFIG_LOADED') && !defined('QUICKTOOLS_CONFIG_LOADED')) {
     require_once dirname(__DIR__) . '/config.php';
 }
 

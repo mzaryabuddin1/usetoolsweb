@@ -21,6 +21,10 @@ if ($uri === '/api/video-cut' || $uri === '/api/video-cut.php') {
     require __DIR__ . '/api/video-cut.php';
     return true;
 }
+if ($uri === '/api/pdf-server' || $uri === '/api/pdf-server.php') {
+    require __DIR__ . '/api/pdf-server.php';
+    return true;
+}
 
 // Serve static files as-is
 if ($uri !== '/' && is_file(__DIR__ . $uri)) {

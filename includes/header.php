@@ -58,7 +58,7 @@ if (!isset($meta)) {
         <div class="container header-inner">
             <a href="<?= rtrim(SITE_URL, '/') ?>/" class="logo">
                 <span class="logo-icon">⚡</span>
-                <span class="logo-text"><?= htmlspecialchars(SITE_NAME) ?><small><?= htmlspecialchars(SITE_DOMAIN) ?></small></span>
+                <span class="logo-text"><?= htmlspecialchars(SITE_NAME) ?></span>
             </a>
             <nav class="main-nav" aria-label="Main navigation">
                 <a href="<?= rtrim(SITE_URL, '/') ?>/">Home</a>

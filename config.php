@@ -1,19 +1,19 @@
 <?php
 /**
- * QuickTools site configuration
- * Change these values when you buy your domain or rebrand.
+ * usetoolsweb.com site configuration
  */
 
-if (defined('QUICKTOOLS_CONFIG_LOADED')) {
+if (defined('SITE_CONFIG_LOADED')) {
     return;
 }
-define('QUICKTOOLS_CONFIG_LOADED', true);
+define('SITE_CONFIG_LOADED', true);
+define('QUICKTOOLS_CONFIG_LOADED', true); // legacy alias
 
-define('SITE_NAME', 'QuickTools');
+define('SITE_NAME', 'usetoolsweb');
 define('SITE_DOMAIN', 'usetoolsweb.com');
 define('SITE_TAGLINE', 'Free Online Tools — Fast, Simple, Private');
-define('SITE_DESCRIPTION', 'Free online tools for everyday tasks — image tools, calculators, developer utilities, text tools, and more. All in your browser.');
-define('SITE_AUTHOR', 'QuickTools');
+define('SITE_DESCRIPTION', 'Free online tools for everyday tasks — PDF tools, image tools, calculators, developer utilities, text tools, and more. All in your browser.');
+define('SITE_AUTHOR', 'usetoolsweb');
 define('SITE_EMAIL', 'hello@usetoolsweb.com');
 
 if (!defined('SITE_URL')) {
@@ -22,7 +22,7 @@ if (!defined('SITE_URL')) {
     define('SITE_URL', $protocol . '://' . $host);
 }
 
-define('SITE_FULL_NAME', SITE_NAME . ' — ' . SITE_DOMAIN);
+define('SITE_FULL_NAME', SITE_NAME);
 
 /** AccessibleWeb Widget — https://github.com/ifrederico/accessible-web-widget (MIT) */
 define('ACC_WIDGET_VERSION', '1.3.3');
@@ -40,8 +40,18 @@ define('FFMPEG_BINARY', '');
 define('VIDEO_CUT_MAX_BYTES', 200 * 1024 * 1024);
 define('VIDEO_CUT_TMP_DIR', __DIR__ . '/tmp/video');
 
+/** PDF tools — max upload size and temp storage for server-side processing */
+define('PDF_MAX_BYTES', 50 * 1024 * 1024);
+define('PDF_TMP_DIR', __DIR__ . '/tmp/pdf');
+
+/** Leave empty to auto-detect Ghostscript, qpdf, LibreOffice on the server */
+define('GHOSTSCRIPT_BINARY', '');
+define('QPDF_BINARY', '');
+define('LIBREOFFICE_BINARY', '');
+
 /** Tool categories for home page grouping */
 $TOOL_CATEGORIES = [
+    'pdf'        => 'PDF Tools',
     'image'      => 'Image Tools',
     'developer'  => 'Developer Tools',
     'text'       => 'Text Tools',
@@ -59,7 +69,6 @@ $TOOLS = [
     ['slug' => 'image-converter', 'title' => 'Image Converter', 'description' => 'Convert PNG, JPG, and WebP images to another format.', 'icon' => '🔄', 'category' => 'image'],
     ['slug' => 'image-to-base64', 'title' => 'Image to Base64', 'description' => 'Convert images to Base64 data URIs and back.', 'icon' => '🔢', 'category' => 'image'],
     ['slug' => 'favicon-generator', 'title' => 'Favicon Generator', 'description' => 'Create favicon PNGs from any image in multiple sizes.', 'icon' => '⭐', 'category' => 'image'],
-    ['slug' => 'pdf-to-jpg', 'title' => 'PDF to JPG', 'description' => 'Convert PDF pages to JPG images in your browser.', 'icon' => '📑', 'category' => 'image'],
     // --- Developer ---
     ['slug' => 'json-formatter', 'title' => 'JSON Formatter', 'description' => 'Validate, beautify, or minify JSON instantly.', 'icon' => '{ }', 'category' => 'developer'],
     ['slug' => 'base64-encode-decode', 'title' => 'Base64 Encoder/Decoder', 'description' => 'Encode or decode text and strings to Base64 format.', 'icon' => '🔤', 'category' => 'developer'],
@@ -72,7 +81,7 @@ $TOOLS = [
     ['slug' => 'markdown-preview', 'title' => 'Markdown Preview', 'description' => 'Write Markdown and preview rendered HTML live.', 'icon' => '📖', 'category' => 'developer'],
     ['slug' => 'css-minifier', 'title' => 'CSS Minifier', 'description' => 'Minify CSS code by removing whitespace and comments.', 'icon' => '🎨', 'category' => 'developer'],
     ['slug' => 'code-minifier', 'title' => 'HTML/JS Minifier', 'description' => 'Minify HTML or JavaScript code.', 'icon' => '💻', 'category' => 'developer'],
-    ['slug' => 'timestamp-converter', 'title' => 'Timestamp Converter', 'description' => 'Convert Unix timestamps to human-readable dates and back.', 'icon' => '🕐', 'category' => 'developer'],
+    ['slug' => 'timestamp-converter', 'title' => 'Timestamp Converter', 'description' => 'Live Unix ms clock, convert epochs, ISO 8601, HTTP date, Windows ticks, NTP, GPS, and code snippets.', 'icon' => '🕐', 'category' => 'developer'],
     // --- Text ---
     ['slug' => 'word-counter', 'title' => 'Word Counter', 'description' => 'Count words, characters, sentences, and reading time.', 'icon' => '📝', 'category' => 'text'],
     ['slug' => 'text-analyzer', 'title' => 'Text Analyzer', 'description' => 'Analyze text: lines, bytes, unique words, and more.', 'icon' => '📊', 'category' => 'text'],
@@ -106,7 +115,42 @@ $TOOLS = [
     ['slug' => 'binary-converter', 'title' => 'Binary Converter', 'description' => 'Convert text to binary and binary back to text.', 'icon' => '01', 'category' => 'utility'],
     ['slug' => 'roman-numerals', 'title' => 'Roman Numerals Converter', 'description' => 'Convert numbers to Roman numerals and back.', 'icon' => 'Ⅻ', 'category' => 'utility'],
     ['slug' => 'timezone-converter', 'title' => 'Timezone Converter', 'description' => 'Convert date and time between timezones.', 'icon' => '🌍', 'category' => 'utility'],
-    ['slug' => 'pdf-merge', 'title' => 'PDF Merge', 'description' => 'Merge multiple PDF files into one document.', 'icon' => '📎', 'category' => 'utility'],
+    // --- PDF Tools (Organize) ---
+    ['slug' => 'pdf-tools', 'title' => 'All PDF Tools', 'description' => 'Browse every PDF tool — merge, split, compress, convert, edit, and secure PDFs.', 'icon' => '📚', 'category' => 'pdf'],
+    ['slug' => 'pdf-merge', 'title' => 'Merge PDF', 'description' => 'Combine multiple PDF files into one document in order.', 'icon' => '📎', 'category' => 'pdf'],
+    ['slug' => 'pdf-split', 'title' => 'Split PDF', 'description' => 'Split a PDF into separate files by page or page ranges.', 'icon' => '✂️', 'category' => 'pdf'],
+    ['slug' => 'pdf-remove-pages', 'title' => 'Remove PDF Pages', 'description' => 'Delete selected pages from a PDF document.', 'icon' => '🗑️', 'category' => 'pdf'],
+    ['slug' => 'pdf-extract-pages', 'title' => 'Extract PDF Pages', 'description' => 'Extract specific pages into a new PDF file.', 'icon' => '📄', 'category' => 'pdf'],
+    ['slug' => 'pdf-organize', 'title' => 'Organize PDF', 'description' => 'Reorder, rotate, and rearrange PDF pages.', 'icon' => '📋', 'category' => 'pdf'],
+    ['slug' => 'scan-to-pdf', 'title' => 'Scan to PDF', 'description' => 'Turn photos or scans (JPG, PNG) into a single PDF.', 'icon' => '📷', 'category' => 'pdf'],
+    // --- PDF Tools (Optimize) ---
+    ['slug' => 'pdf-compress', 'title' => 'Compress PDF', 'description' => 'Reduce PDF file size while keeping good quality.', 'icon' => '🗜️', 'category' => 'pdf'],
+    ['slug' => 'pdf-repair', 'title' => 'Repair PDF', 'description' => 'Fix corrupted or damaged PDF files.', 'icon' => '🔧', 'category' => 'pdf'],
+    ['slug' => 'ocr-pdf', 'title' => 'OCR PDF', 'description' => 'Make scanned PDFs searchable with OCR (server processing).', 'icon' => '🔍', 'category' => 'pdf'],
+    // --- PDF Tools (Convert to PDF) ---
+    ['slug' => 'jpg-to-pdf', 'title' => 'JPG to PDF', 'description' => 'Convert JPG and PNG images into a PDF document.', 'icon' => '🖼️', 'category' => 'pdf'],
+    ['slug' => 'word-to-pdf', 'title' => 'Word to PDF', 'description' => 'Convert DOC and DOCX files to PDF.', 'icon' => '📝', 'category' => 'pdf'],
+    ['slug' => 'excel-to-pdf', 'title' => 'Excel to PDF', 'description' => 'Convert XLS and XLSX spreadsheets to PDF.', 'icon' => '📊', 'category' => 'pdf'],
+    ['slug' => 'ppt-to-pdf', 'title' => 'PowerPoint to PDF', 'description' => 'Convert PPT and PPTX presentations to PDF.', 'icon' => '📽️', 'category' => 'pdf'],
+    ['slug' => 'html-to-pdf', 'title' => 'HTML to PDF', 'description' => 'Convert a webpage URL or HTML file to PDF.', 'icon' => '🌐', 'category' => 'pdf'],
+    // --- PDF Tools (Convert from PDF) ---
+    ['slug' => 'pdf-to-jpg', 'title' => 'PDF to JPG', 'description' => 'Convert PDF pages to JPG images in your browser.', 'icon' => '📑', 'category' => 'pdf'],
+    ['slug' => 'pdf-to-word', 'title' => 'PDF to Word', 'description' => 'Convert PDF files to editable DOCX documents.', 'icon' => '📃', 'category' => 'pdf'],
+    ['slug' => 'pdf-to-excel', 'title' => 'PDF to Excel', 'description' => 'Convert PDF tables and data to Excel spreadsheets.', 'icon' => '📈', 'category' => 'pdf'],
+    ['slug' => 'pdf-to-ppt', 'title' => 'PDF to PowerPoint', 'description' => 'Convert PDF slides to editable PPTX presentations.', 'icon' => '🎞️', 'category' => 'pdf'],
+    ['slug' => 'pdf-to-pdfa', 'title' => 'PDF to PDF/A', 'description' => 'Convert PDF to PDF/A for long-term archiving.', 'icon' => '🏛️', 'category' => 'pdf'],
+    // --- PDF Tools (Edit) ---
+    ['slug' => 'pdf-rotate', 'title' => 'Rotate PDF', 'description' => 'Rotate PDF pages 90°, 180°, or 270°.', 'icon' => '🔄', 'category' => 'pdf'],
+    ['slug' => 'pdf-page-numbers', 'title' => 'Add Page Numbers', 'description' => 'Add page numbers to your PDF document.', 'icon' => '🔢', 'category' => 'pdf'],
+    ['slug' => 'pdf-watermark', 'title' => 'Add Watermark', 'description' => 'Stamp text or image watermarks on PDF pages.', 'icon' => '💧', 'category' => 'pdf'],
+    ['slug' => 'pdf-crop', 'title' => 'Crop PDF', 'description' => 'Crop PDF margins or trim page edges.', 'icon' => '✂️', 'category' => 'pdf'],
+    ['slug' => 'pdf-edit', 'title' => 'Edit PDF', 'description' => 'Add text annotations to PDF pages.', 'icon' => '✏️', 'category' => 'pdf'],
+    // --- PDF Tools (Security) ---
+    ['slug' => 'pdf-unlock', 'title' => 'Unlock PDF', 'description' => 'Remove password protection from PDF files.', 'icon' => '🔓', 'category' => 'pdf'],
+    ['slug' => 'pdf-protect', 'title' => 'Protect PDF', 'description' => 'Encrypt PDF files with a password.', 'icon' => '🔒', 'category' => 'pdf'],
+    ['slug' => 'pdf-sign', 'title' => 'Sign PDF', 'description' => 'Add your signature image to a PDF document.', 'icon' => '✍️', 'category' => 'pdf'],
+    ['slug' => 'pdf-redact', 'title' => 'Redact PDF', 'description' => 'Permanently black out sensitive text or areas.', 'icon' => '⬛', 'category' => 'pdf'],
+    ['slug' => 'pdf-compare', 'title' => 'Compare PDF', 'description' => 'Compare two PDF files page by page.', 'icon' => '⚖️', 'category' => 'pdf'],
     ['slug' => 'dice-roller', 'title' => 'Dice Roller', 'description' => 'Roll virtual dice — d4, d6, d8, d10, d12, d20.', 'icon' => '🎲', 'category' => 'utility'],
     ['slug' => 'online-timer', 'title' => 'Online Timer', 'description' => 'Countdown timer and stopwatch in your browser.', 'icon' => '⏱️', 'category' => 'utility'],
     ['slug' => 'card-validator', 'title' => 'Credit Card Validator', 'description' => 'Validate credit card numbers using the Luhn algorithm.', 'icon' => '💳', 'category' => 'utility'],
@@ -116,7 +160,7 @@ $TOOLS = [
 ];
 
 /** SEO — default site keywords (used on home + appended on tool pages) */
-define('SITE_KEYWORDS', 'online tools, free tools, web utilities, usetoolsweb, quicktools, developer tools, image tools, calculators, text tools');
+define('SITE_KEYWORDS', 'online tools, free tools, web utilities, usetoolsweb, pdf tools, developer tools, image tools, calculators, text tools');
 
 /** OG default image — update path when you add a real social share image */
 define('SITE_OG_IMAGE', '/assets/images/og-default.png');

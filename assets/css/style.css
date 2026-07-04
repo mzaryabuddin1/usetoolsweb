@@ -1,4 +1,4 @@
-/* QuickTools — global styles */
+/* usetoolsweb — global styles */
 
 :root {
     --color-bg: #f8fafc;
@@ -589,6 +589,9 @@ input[type="text"]:not(.tool-search-input),
 input[type="search"]:not(.tool-search-input),
 input[type="email"],
 input[type="number"],
+input[type="datetime-local"],
+input[type="date"],
+input[type="time"],
 input[type="range"],
 textarea,
 select {
@@ -1118,6 +1121,74 @@ select:focus {
     font-size: 0.9rem;
 }
 
+/* PDF tools */
+.pdf-tools-section {
+    margin-bottom: 2.5rem;
+}
+
+.pdf-fieldset {
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    margin: 1rem 0;
+}
+
+.pdf-fieldset legend {
+    padding: 0 0.35rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.radio-label {
+    display: block;
+    margin: 0.35rem 0;
+    font-size: 0.95rem;
+    cursor: pointer;
+}
+
+.radio-label input {
+    margin-right: 0.5rem;
+}
+
+.pdf-page-input {
+    max-width: 100%;
+}
+
+.pdf-meta {
+    margin: 0.75rem 0;
+    font-size: 0.95rem;
+}
+
+.pdf-crop-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 1rem;
+}
+
+.pdf-compare-result {
+    margin-top: 1.5rem;
+}
+
+.pdf-compare-canvas-wrap {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.pdf-compare-canvas-wrap canvas {
+    max-width: 100%;
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    background: #fff;
+}
+
+@media (max-width: 640px) {
+    .pdf-compare-canvas-wrap {
+        grid-template-columns: 1fr;
+    }
+}
+
 .btn-secondary.active {
     background: var(--color-primary-light);
     border-color: var(--color-primary);
@@ -1339,6 +1410,250 @@ select:focus {
 
 [data-theme="dark"] wave {
     filter: none;
+}
+
+/* Timestamp converter */
+.timestamp-tool-panel .ts-section-title {
+    margin: 0 0 0.35rem;
+    font-size: 1.05rem;
+}
+
+.timestamp-tool-panel .ts-section-desc {
+    margin: 0 0 1rem;
+}
+
+.timestamp-tool-panel .ts-divider {
+    border: none;
+    border-top: 1px solid var(--color-border);
+    margin: 1.5rem 0;
+}
+
+.stat-box-live .value-sm {
+    font-size: 0.95rem;
+    word-break: break-all;
+}
+
+.value-mono {
+    font-family: ui-monospace, monospace;
+}
+
+.timestamp-live-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1.5rem;
+    margin-top: 1rem;
+    font-size: 0.9rem;
+}
+
+.stat-box-live .ts-copyable {
+    cursor: pointer;
+    border-radius: 6px;
+    transition: background 0.12s;
+}
+
+.timestamp-live-row .ts-copyable {
+    border-radius: 4px;
+    padding: 0.1rem 0.25rem;
+    transition: background 0.12s;
+}
+
+.stat-box-live .ts-copyable:hover,
+.stat-box-live .ts-copyable:focus-visible,
+.timestamp-live-row .ts-copyable:hover,
+.timestamp-live-row .ts-copyable:focus-visible {
+    background: var(--color-primary-light);
+    outline: none;
+}
+
+.ts-datetime-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.ts-datetime-input {
+    color-scheme: light dark;
+    min-height: 2.75rem;
+    padding-right: 2.85rem;
+}
+
+/* Hide native icon — use visible button instead */
+.ts-datetime-input::-webkit-calendar-picker-indicator {
+    opacity: 0;
+    position: absolute;
+    right: 0;
+    width: 2.85rem;
+    height: 100%;
+    cursor: pointer;
+    z-index: 2;
+}
+
+.ts-datetime-icon {
+    position: absolute;
+    right: 0.65rem;
+    top: 50%;
+    transform: translateY(-50%);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.25rem;
+    border: none;
+    background: transparent;
+    color: var(--color-primary);
+    cursor: pointer;
+    border-radius: 6px;
+    z-index: 3;
+}
+
+.ts-datetime-icon:hover {
+    background: var(--color-primary-light);
+}
+
+.ts-copy-tooltip {
+    position: fixed;
+    z-index: 9999;
+    padding: 0.35rem 0.65rem;
+    background: var(--color-text);
+    color: var(--color-surface);
+    font-size: 0.8rem;
+    font-weight: 600;
+    border-radius: 6px;
+    pointer-events: none;
+    transform: translateX(-50%);
+    box-shadow: var(--shadow);
+}
+
+.ts-copy-tooltip.hidden {
+    display: none;
+}
+
+.timestamp-live-row .ts-label {
+    display: inline-block;
+    min-width: 4.5rem;
+    font-weight: 600;
+    color: var(--color-muted);
+}
+
+.ts-field-hint {
+    margin: 0.35rem 0 0;
+    font-size: 0.8rem;
+}
+
+.ts-format-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+}
+
+.ts-format-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+}
+
+.ts-format-meta {
+    flex: 1;
+    min-width: 140px;
+}
+
+.ts-format-meta strong {
+    display: block;
+    font-size: 0.9rem;
+}
+
+.ts-format-meta span {
+    display: block;
+    font-size: 0.78rem;
+    color: var(--color-muted);
+    margin-top: 0.15rem;
+}
+
+.ts-format-value-wrap {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    flex: 2;
+    min-width: min(100%, 280px);
+}
+
+.ts-format-value {
+    flex: 1;
+    display: block;
+    padding: 0.45rem 0.6rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    font-size: 0.82rem;
+    word-break: break-all;
+}
+
+.ts-details {
+    margin-top: 0.75rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    padding: 0.75rem 1rem;
+    background: var(--color-bg);
+}
+
+.ts-details summary {
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.ts-details[open] summary {
+    margin-bottom: 0.75rem;
+}
+
+.ts-snippet-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.ts-snippet {
+    position: relative;
+    padding-bottom: 0.25rem;
+}
+
+.ts-snippet-lang {
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 0.35rem;
+}
+
+.ts-snippet pre {
+    margin: 0;
+    padding: 0.65rem 0.75rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    font-size: 0.8rem;
+    overflow-x: auto;
+}
+
+.ts-snippet .btn-ts-copy {
+    margin-top: 0.35rem;
+}
+
+.ts-reference p {
+    margin: 0 0 0.75rem;
+    font-size: 0.9rem;
+    line-height: 1.55;
+    color: var(--color-muted);
+}
+
+.ts-reference p:last-child {
+    margin-bottom: 0;
+}
+
+.ts-reference code {
+    font-size: 0.85em;
 }
 
 /* Audio cutter — timeline editor */

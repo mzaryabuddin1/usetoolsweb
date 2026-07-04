@@ -15,6 +15,16 @@ if ($uri === '/robots.txt') {
     require __DIR__ . '/robots.php';
     return true;
 }
+if ($uri === '/site.webmanifest') {
+    header('Content-Type: application/manifest+json; charset=utf-8');
+    readfile(__DIR__ . '/site.webmanifest');
+    return true;
+}
+if ($uri === '/favicon.ico') {
+    header('Content-Type: image/png');
+    readfile(__DIR__ . '/assets/images/favicon-32x32.png');
+    return true;
+}
 
 // API routes
 if ($uri === '/api/video-cut' || $uri === '/api/video-cut.php') {

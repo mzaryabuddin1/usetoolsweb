@@ -49,6 +49,7 @@ if (!isset($meta)) {
     <meta name="twitter:description" content="<?= htmlspecialchars($meta['description']) ?>">
     <meta name="twitter:image" content="<?= htmlspecialchars($meta['og_image'] ?? rtrim(SITE_URL, '/') . SITE_OG_IMAGE) ?>">
     <?php require __DIR__ . '/seo-schema.php'; ?>
+    <?php require __DIR__ . '/favicons.php'; ?>
     <link rel="stylesheet" href="/assets/css/style.css">
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <?php if (!empty($extra_head)) echo $extra_head; ?>
@@ -56,9 +57,15 @@ if (!isset($meta)) {
 <body>
     <header class="site-header">
         <div class="container header-inner">
-            <a href="<?= rtrim(SITE_URL, '/') ?>/" class="logo">
-                <span class="logo-icon">⚡</span>
-                <span class="logo-text"><?= htmlspecialchars(SITE_NAME) ?></span>
+            <a href="<?= rtrim(SITE_URL, '/') ?>/" class="logo" aria-label="<?= htmlspecialchars(SITE_LOGO_ALT) ?> — Home">
+                <img
+                    src="<?= SITE_LOGO ?>"
+                    alt="<?= htmlspecialchars(SITE_LOGO_ALT) ?>"
+                    class="logo-img"
+                    width="220"
+                    height="36"
+                    decoding="async"
+                >
             </a>
             <nav class="main-nav" aria-label="Main navigation">
                 <a href="<?= rtrim(SITE_URL, '/') ?>/">Home</a>

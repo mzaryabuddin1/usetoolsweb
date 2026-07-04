@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 56" role="img" aria-label="usetoolsweb">
+  <title>usetoolsweb</title>
+  <defs>
+    <style>
+      .logo-navy { fill: #0a2558; }
+      .logo-orange { fill: #f97316; }
+      .logo-word {
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+        font-weight: 700;
+        font-size: 28px;
+        letter-spacing: -0.02em;
+      }
+    </style>
+  </defs>
+  <!-- Left wing -->
+  <path class="logo-navy" d="M4 28 L52 24.5 L52 31.5 Z"/>
+  <!-- Right wing -->
+  <path class="logo-navy" d="M288 24.5 L336 28 L288 31.5 Z"/>
+  <!-- Wordmark -->
+  <text x="170" y="36" text-anchor="middle" class="logo-word">
+    <tspan class="logo-navy">use</tspan><tspan class="logo-orange">tools</tspan><tspan class="logo-navy">web</tspan>
+  </text>
+</svg>

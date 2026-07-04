@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="UTW">
+  <title>usetoolsweb</title>
+  <defs>
+    <linearGradient id="utw-gradient" x1="8" y1="32" x2="56" y2="32" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0a2558"/>
+      <stop offset="38%" stop-color="#4c1d95"/>
+      <stop offset="62%" stop-color="#c026d3"/>
+      <stop offset="82%" stop-color="#ea580c"/>
+      <stop offset="100%" stop-color="#f97316"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="14" fill="#ffffff"/>
+  <text
+    x="32"
+    y="43"
+    text-anchor="middle"
+    font-family="system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif"
+    font-weight="800"
+    font-size="28"
+    letter-spacing="-0.04em"
+    fill="url(#utw-gradient)"
+  >UTW</text>
+</svg>

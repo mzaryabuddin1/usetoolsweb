@@ -144,21 +144,33 @@ a:hover { text-decoration: underline; }
 .logo {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    font-weight: 700;
-    font-size: 1.25rem;
-    color: var(--color-text);
+    text-decoration: none;
+    flex-shrink: 0;
+}
+
+.logo:hover { text-decoration: none; opacity: 0.92; }
+
+.logo-img {
+    display: block;
+    height: 34px;
+    width: auto;
+    max-width: min(220px, 52vw);
+}
+
+.footer-logo {
+    display: inline-block;
+    margin-bottom: 0.5rem;
     text-decoration: none;
 }
 
-.logo:hover { text-decoration: none; }
+.footer-logo img {
+    height: 28px;
+    width: auto;
+    display: block;
+}
 
-.logo-icon { font-size: 1.5rem; }
-
-.logo-text small {
-    font-weight: 500;
-    color: var(--color-muted);
-    font-size: 0.85em;
+.footer-logo:hover {
+    opacity: 0.9;
 }
 
 .main-nav {

@@ -167,8 +167,19 @@ $TOOLS = [
 /** SEO — default site keywords (used on home + appended on tool pages) */
 define('SITE_KEYWORDS', 'online tools, free tools, web utilities, usetoolsweb, pdf tools, developer tools, image tools, calculators, text tools');
 
-/** OG default image — update path when you add a real social share image */
+/** OG default image — social share preview */
 define('SITE_OG_IMAGE', '/assets/images/og-default.png');
+
+/** Site logo (SVG) */
+define('SITE_LOGO', '/assets/images/logo.svg');
+define('SITE_LOGO_ALT', 'usetoolsweb');
+
+/** Favicons — UTW gradient icon set */
+define('SITE_FAVICON_SVG', '/assets/images/favicon.svg');
+define('SITE_FAVICON_32', '/assets/images/favicon-32x32.png');
+define('SITE_FAVICON_16', '/assets/images/favicon-16x16.png');
+define('SITE_APPLE_TOUCH_ICON', '/assets/images/apple-touch-icon.png');
+define('SITE_THEME_COLOR', '#0a2558');
 
 function get_tool_by_slug(string $slug): ?array
 {

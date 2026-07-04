@@ -29,6 +29,7 @@ $orgSchema = [
     '@type'    => 'Organization',
     'name'     => SITE_NAME,
     'url'      => $baseUrl . '/',
+    'logo'     => $baseUrl . SITE_LOGO,
     'email'    => SITE_EMAIL,
 ];
 

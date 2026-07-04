@@ -25,6 +25,10 @@ if ($uri === '/api/pdf-server' || $uri === '/api/pdf-server.php') {
     require __DIR__ . '/api/pdf-server.php';
     return true;
 }
+if ($uri === '/api/curl-proxy' || $uri === '/api/curl-proxy.php') {
+    require __DIR__ . '/api/curl-proxy.php';
+    return true;
+}
 
 // Serve static files as-is
 if ($uri !== '/' && is_file(__DIR__ . $uri)) {

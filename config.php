@@ -49,6 +49,10 @@ define('GHOSTSCRIPT_BINARY', '');
 define('QPDF_BINARY', '');
 define('LIBREOFFICE_BINARY', '');
 
+/** cURL runner proxy — max response size and timeout (seconds) */
+define('CURL_PROXY_MAX_BYTES', 10 * 1024 * 1024);
+define('CURL_PROXY_TIMEOUT', 30);
+
 /** Tool categories for home page grouping */
 $TOOL_CATEGORIES = [
     'pdf'        => 'PDF Tools',
@@ -82,6 +86,7 @@ $TOOLS = [
     ['slug' => 'css-minifier', 'title' => 'CSS Minifier', 'description' => 'Minify CSS code by removing whitespace and comments.', 'icon' => '🎨', 'category' => 'developer'],
     ['slug' => 'code-minifier', 'title' => 'HTML/JS Minifier', 'description' => 'Minify HTML or JavaScript code.', 'icon' => '💻', 'category' => 'developer'],
     ['slug' => 'timestamp-converter', 'title' => 'Timestamp Converter', 'description' => 'Live Unix ms clock, convert epochs, ISO 8601, HTTP date, Windows ticks, NTP, GPS, and code snippets.', 'icon' => '🕐', 'category' => 'developer'],
+    ['slug' => 'curl-runner', 'title' => 'cURL Runner', 'description' => 'Paste a cURL command from Postman or anywhere, parse it, and send the HTTP request instantly.', 'icon' => '🌐', 'category' => 'developer'],
     // --- Text ---
     ['slug' => 'word-counter', 'title' => 'Word Counter', 'description' => 'Count words, characters, sentences, and reading time.', 'icon' => '📝', 'category' => 'text'],
     ['slug' => 'text-analyzer', 'title' => 'Text Analyzer', 'description' => 'Analyze text: lines, bytes, unique words, and more.', 'icon' => '📊', 'category' => 'text'],

@@ -39,6 +39,15 @@ if ($uri === '/api/curl-proxy' || $uri === '/api/curl-proxy.php') {
     require __DIR__ . '/api/curl-proxy.php';
     return true;
 }
+if ($uri === '/api/qr-share-upload' || $uri === '/api/qr-share-upload.php') {
+    require __DIR__ . '/api/qr-share-upload.php';
+    return true;
+}
+if (preg_match('#^/f/([a-f0-9]{32})$#', $uri, $shareMatch)) {
+    $_GET['token'] = $shareMatch[1];
+    require __DIR__ . '/share-download.php';
+    return true;
+}
 
 // Serve static files as-is
 if ($uri !== '/' && is_file(__DIR__ . $uri)) {

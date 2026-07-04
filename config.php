@@ -53,6 +53,11 @@ define('LIBREOFFICE_BINARY', '');
 define('CURL_PROXY_MAX_BYTES', 10 * 1024 * 1024);
 define('CURL_PROXY_TIMEOUT', 30);
 
+/** QR file share — temporary uploads for QR download links */
+define('QR_SHARE_MAX_BYTES', 25 * 1024 * 1024);
+define('QR_SHARE_TMP_DIR', __DIR__ . '/tmp/qr-shares');
+define('QR_SHARE_RETENTION_DAYS', 10);
+
 /** Tool categories for home page grouping */
 $TOOL_CATEGORIES = [
     'pdf'        => 'PDF Tools',
@@ -105,7 +110,7 @@ $TOOLS = [
     // --- Generators ---
     ['slug' => 'password-generator', 'title' => 'Password Generator', 'description' => 'Generate strong random passwords with custom length and options.', 'icon' => '🔐', 'category' => 'generator'],
     ['slug' => 'uuid-generator', 'title' => 'UUID Generator', 'description' => 'Generate random UUID v4 identifiers instantly.', 'icon' => '🆔', 'category' => 'generator'],
-    ['slug' => 'qr-code-generator', 'title' => 'QR Code Generator', 'description' => 'Create QR codes from text or URLs and download as PNG.', 'icon' => '📱', 'category' => 'generator'],
+    ['slug' => 'qr-code-generator', 'title' => 'QR Code Generator', 'description' => 'Create QR codes from text, URLs, or uploaded files. Share files via QR — auto-deleted after 10 days.', 'icon' => '📱', 'category' => 'generator'],
     ['slug' => 'qr-code-reader', 'title' => 'QR Code Reader', 'description' => 'Scan and decode QR codes using your camera.', 'icon' => '📷', 'category' => 'generator'],
     ['slug' => 'lorem-ipsum-generator', 'title' => 'Lorem Ipsum Generator', 'description' => 'Generate placeholder Lorem Ipsum text for designs and mockups.', 'icon' => '📄', 'category' => 'generator'],
     ['slug' => 'random-number-generator', 'title' => 'Random Number Generator', 'description' => 'Generate random numbers within a custom range.', 'icon' => '🎲', 'category' => 'generator'],

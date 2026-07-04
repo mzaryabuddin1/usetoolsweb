@@ -9,6 +9,7 @@ RewriteRule ^sitemap\.xml$ sitemap.php [L]
 RewriteRule ^robots\.txt$ robots.php [L]
 RewriteRule ^site\.webmanifest$ site.webmanifest [L]
 RewriteRule ^favicon\.ico$ assets/images/favicon-32x32.png [L]
+RewriteRule ^f/([a-f0-9]{32})$ share-download.php?token=$1 [L,QSA]
 
 # Clean URLs: /compress-image -> compress-image.php
 RewriteCond %{REQUEST_FILENAME} !-f

@@ -13,3 +13,4 @@ tmp/video/
 tmp/pdf/
 tmp/bg-remove/
 config/ga-service-account.json
+data/trending-tools.json

@@ -85,7 +85,6 @@ function trending_build_from_page_views(array $pageViews, int $max = 6): array
             'icon'        => $tool['icon'],
             'category'    => $tool['category'] ?? 'utility',
             'views'       => $count,
-            'url'         => tool_url($slug),
         ];
     }
 
@@ -157,7 +156,15 @@ function trending_refresh_from_ga4(): array
 function trending_tools_for_home(): array
 {
     $data = trending_load_json();
-    return $data['tools'] ?? [];
+    $tools = $data['tools'] ?? [];
+
+    return array_map(function ($tool) {
+        if (!empty($tool['slug'])) {
+            $tool['url'] = tool_url($tool['slug']);
+        }
+
+        return $tool;
+    }, $tools);
 }
 
 function trending_last_updated_label(): string

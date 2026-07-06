@@ -59,7 +59,7 @@ require_once __DIR__ . '/includes/header.php';
     </div>
     <div class="tools-grid trending-grid">
         <?php foreach ($trendingTools as $tool): ?>
-            <a href="<?= htmlspecialchars($tool['url']) ?>" class="tool-card trending-card">
+            <a href="<?= htmlspecialchars(tool_url($tool['slug'])) ?>" class="tool-card trending-card">
                 <div class="tool-card-icon"><?= $tool['icon'] ?></div>
                 <h3><?= htmlspecialchars($tool['title']) ?></h3>
                 <p><?= htmlspecialchars($tool['description']) ?></p>

@@ -11,15 +11,36 @@ define('QUICKTOOLS_CONFIG_LOADED', true); // legacy alias
 
 define('SITE_NAME', 'usetoolsweb');
 define('SITE_DOMAIN', 'usetoolsweb.com');
+/** Optional: force canonical base URL on production (leave empty to auto-detect) */
+define('SITE_URL_FIXED', '');
 define('SITE_TAGLINE', 'Free Online Tools — Fast, Simple, Private');
 define('SITE_DESCRIPTION', 'Free online tools for everyday tasks — PDF tools, image tools, calculators, developer utilities, text tools, and more. All in your browser.');
 define('SITE_AUTHOR', 'usetoolsweb');
 define('SITE_EMAIL', 'hello@usetoolsweb.com');
 
 if (!defined('SITE_URL')) {
-    $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
-    $host     = $_SERVER['HTTP_HOST'] ?? 'localhost';
-    define('SITE_URL', $protocol . '://' . $host);
+    /** Set on production if auto-detect is wrong, e.g. https://usetoolsweb.com */
+    $siteUrlFixed = defined('SITE_URL_FIXED') ? (string) SITE_URL_FIXED : '';
+
+    if ($siteUrlFixed !== '') {
+        define('SITE_URL', rtrim($siteUrlFixed, '/'));
+    } else {
+        $protocol = 'http';
+        if (
+            (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+            || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && strtolower((string) $_SERVER['HTTP_X_FORWARDED_PROTO']) === 'https')
+            || (!empty($_SERVER['HTTP_X_FORWARDED_SSL']) && $_SERVER['HTTP_X_FORWARDED_SSL'] === 'on')
+        ) {
+            $protocol = 'https';
+        }
+
+        $host = $_SERVER['HTTP_X_FORWARDED_HOST'] ?? $_SERVER['HTTP_HOST'] ?? SITE_DOMAIN;
+        if (str_contains((string) $host, ',')) {
+            $host = trim(explode(',', (string) $host)[0]);
+        }
+
+        define('SITE_URL', $protocol . '://' . $host);
+    }
 }
 
 define('SITE_FULL_NAME', SITE_NAME);

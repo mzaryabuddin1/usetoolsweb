@@ -1,7 +1,10 @@
 <?php
 require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/includes/trending-tools.php';
 
 $meta = page_meta(SITE_NAME, SITE_DESCRIPTION);
+$trendingTools = trending_tools_for_home();
+$trendingUpdated = trending_last_updated_label();
 
 require_once __DIR__ . '/includes/header.php';
 ?>
@@ -45,6 +48,27 @@ require_once __DIR__ . '/includes/header.php';
         </div>
     </div>
 </section>
+
+<?php if (!empty($trendingTools)): ?>
+<section class="trending-tools container">
+    <div class="trending-tools-head">
+        <h2 class="section-title trending-title">🔥 Trending tools</h2>
+        <?php if ($trendingUpdated): ?>
+            <p class="hint trending-updated"><?= htmlspecialchars($trendingUpdated) ?> · last <?= (int) (defined('TRENDING_LOOKBACK_DAYS') ? TRENDING_LOOKBACK_DAYS : 7) ?> days</p>
+        <?php endif; ?>
+    </div>
+    <div class="tools-grid trending-grid">
+        <?php foreach ($trendingTools as $tool): ?>
+            <a href="<?= htmlspecialchars($tool['url']) ?>" class="tool-card trending-card">
+                <div class="tool-card-icon"><?= $tool['icon'] ?></div>
+                <h3><?= htmlspecialchars($tool['title']) ?></h3>
+                <p><?= htmlspecialchars($tool['description']) ?></p>
+                <span class="trending-views"><?= number_format((int) $tool['views']) ?> views</span>
+            </a>
+        <?php endforeach; ?>
+    </div>
+</section>
+<?php endif; ?>
 
 <section id="tools" class="container">
     <p id="tool-search-empty" class="tool-search-empty hidden">No tools match your search. Try keywords like <em>image</em>, <em>json</em>, or <em>calculator</em>.</p>

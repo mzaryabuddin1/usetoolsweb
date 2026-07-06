@@ -585,6 +585,49 @@ a:hover { text-decoration: underline; }
     color: var(--color-muted);
 }
 
+/* Trending tools (home) */
+.trending-tools {
+    margin-bottom: 2rem;
+    padding-bottom: 0.5rem;
+}
+
+.trending-tools-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.5rem 1rem;
+    margin-bottom: 1rem;
+}
+
+.trending-title {
+    margin: 0;
+}
+
+.trending-updated {
+    margin: 0;
+}
+
+.trending-grid {
+    margin-bottom: 0;
+}
+
+.trending-card {
+    position: relative;
+    border-color: color-mix(in srgb, var(--color-primary) 35%, var(--color-border));
+}
+
+.trending-views {
+    display: inline-block;
+    margin-top: 0.65rem;
+    padding: 0.2rem 0.55rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 999px;
+    background: var(--color-primary-light);
+    color: var(--color-primary);
+}
+
 /* Tool page */
 .tool-page {
     padding: 2rem 0 3rem;

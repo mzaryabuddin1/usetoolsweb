@@ -36,6 +36,17 @@ define('GA_MEASUREMENT_ID', 'G-1VF9ZJ7EPG');
 /** Google AdSense — set to true to show ad slots site-wide */
 define('SHOW_ADSENSE', false);
 
+/**
+ * Trending tools (Google Analytics 4 Data API)
+ * Setup: see comments in config/ga-service-account.json.example
+ */
+define('GA4_PROPERTY_ID', '544137758'); // Numeric property ID from GA Admin (not G-XXXXXXXX)
+define('GA4_CREDENTIALS_FILE', __DIR__ . '/config/ga-service-account.json');
+define('TRENDING_JSON_FILE', __DIR__ . '/data/trending-tools.json');
+define('TRENDING_CRON_SECRET', 'D:}yAaaln&>2ANi1b@a4b:oHS+@Jh4N!g'); // Set a long random string; required to run cron URL
+define('TRENDING_MAX_TOOLS', 5);
+define('TRENDING_LOOKBACK_DAYS', 7);
+
 /** FFmpeg — leave empty to auto-detect; set full path on server if not in PATH (e.g. /usr/bin/ffmpeg) */
 define('FFMPEG_BINARY', '');
 

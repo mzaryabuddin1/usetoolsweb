@@ -55,6 +55,10 @@ if ($uri === '/api/air-share-desk' || $uri === '/api/air-share-desk.php') {
     require __DIR__ . '/api/air-share-desk.php';
     return true;
 }
+if ($uri === '/api/cron-trending' || $uri === '/api/cron-trending.php') {
+    require __DIR__ . '/api/cron-trending.php';
+    return true;
+}
 if (preg_match('#^/f/([a-f0-9]{32})$#', $uri, $shareMatch)) {
     $_GET['token'] = $shareMatch[1];
     require __DIR__ . '/share-download.php';

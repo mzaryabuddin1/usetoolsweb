@@ -45,7 +45,7 @@ function pdf_server_tool_page(
             <div class="pdf-server-error alert alert-error hidden"></div>
         </div>
 
-        <div class="ad-slot" aria-hidden="true">Ad space</div>
+        <?php ad_slot('Ad space'); ?>
     </div>
     <?php
     global $extra_scripts;

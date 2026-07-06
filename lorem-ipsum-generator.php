@@ -44,7 +44,7 @@ require_once __DIR__ . '/includes/header.php';
         <textarea id="lorem-output" readonly placeholder="Generated text will appear here..."></textarea>
     </div>
 
-    <div class="ad-slot" aria-hidden="true">Ad space — add Google AdSense code here</div>
+    <?php ad_slot(); ?>
 </div>
 
 <?php

@@ -33,6 +33,9 @@ define('ACC_WIDGET_LANG', 'en');
 /** Google Analytics — set to empty string to disable */
 define('GA_MEASUREMENT_ID', 'G-1VF9ZJ7EPG');
 
+/** Google AdSense — set to true to show ad slots site-wide */
+define('SHOW_ADSENSE', false);
+
 /** FFmpeg — leave empty to auto-detect; set full path on server if not in PATH (e.g. /usr/bin/ffmpeg) */
 define('FFMPEG_BINARY', '');
 
@@ -295,4 +298,15 @@ function tools_by_category(): array
     return array_filter($grouped, function ($g) {
         return count($g['tools']) > 0;
     });
+}
+
+/**
+ * Render an AdSense placeholder when SHOW_ADSENSE is true.
+ */
+function ad_slot(string $label = 'Ad space — add Google AdSense code here'): void
+{
+    if (!defined('SHOW_ADSENSE') || !SHOW_ADSENSE) {
+        return;
+    }
+    echo '<div class="ad-slot" aria-hidden="true">' . htmlspecialchars($label, ENT_QUOTES, 'UTF-8') . '</div>';
 }

@@ -46,7 +46,7 @@ require_once __DIR__ . '/includes/header.php';
         <div id="jpg-pdf-error" class="alert alert-error hidden"></div>
     </div>
 
-    <div class="ad-slot" aria-hidden="true">Ad space</div>
+    <?php ad_slot('Ad space'); ?>
 </div>
 
 <?php

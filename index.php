@@ -77,7 +77,7 @@ require_once __DIR__ . '/includes/header.php';
 </section>
 
 <div class="container">
-    <div class="ad-slot" aria-hidden="true">Ad space — add Google AdSense code here</div>
+    <?php ad_slot(); ?>
 </div>
 
 <?php

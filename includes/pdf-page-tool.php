@@ -43,7 +43,7 @@ function pdf_page_tool_page(string $title, string $desc, string $mode, string $s
             <div class="pdf-error alert alert-error hidden"></div>
         </div>
 
-        <div class="ad-slot" aria-hidden="true">Ad space</div>
+        <?php ad_slot('Ad space'); ?>
     </div>
     <?php
     global $extra_scripts;

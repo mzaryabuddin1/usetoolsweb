@@ -39,7 +39,7 @@ require_once __DIR__ . '/includes/header.php';
         <div id="pdf-split-error" class="alert alert-error hidden"></div>
     </div>
 
-    <div class="ad-slot" aria-hidden="true">Ad space</div>
+    <?php ad_slot('Ad space'); ?>
 </div>
 
 <?php

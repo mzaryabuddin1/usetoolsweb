@@ -50,7 +50,7 @@ require_once __DIR__ . '/includes/header.php';
 </section>
 
 <?php if (!empty($trendingTools)): ?>
-<section class="trending-tools container">
+<section id="trending-tools-section" class="trending-tools container">
     <div class="trending-tools-head">
         <h2 class="section-title trending-title">🔥 Trending tools</h2>
         <?php if ($trendingUpdated): ?>

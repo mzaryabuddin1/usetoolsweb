@@ -2433,3 +2433,152 @@ select:focus {
     flex: 1;
     min-width: 200px;
 }
+
+/* Cron job service */
+.cron-tip {
+    margin-bottom: 1.25rem;
+}
+
+.cron-section-title {
+    font-size: 1.05rem;
+    margin: 0 0 1rem;
+}
+
+.cron-form-section {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.cron-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.cron-form-full {
+    grid-column: 1 / -1;
+}
+
+@media (max-width: 600px) {
+    .cron-form-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.cron-jobs-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.cron-jobs-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.cron-job-card {
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    background: var(--color-bg);
+}
+
+.cron-job-head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.cron-job-title strong {
+    font-size: 1rem;
+}
+
+.cron-job-meta {
+    font-size: 0.85rem;
+    color: var(--color-muted);
+    margin-top: 0.25rem;
+}
+
+.cron-job-url {
+    word-break: break-all;
+    margin-top: 0.2rem;
+}
+
+.cron-job-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: flex-start;
+}
+
+.cron-job-stats {
+    font-size: 0.85rem;
+    color: var(--color-muted);
+    margin-bottom: 0.5rem;
+}
+
+.cron-badge {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 0.15rem 0.45rem;
+    border-radius: 4px;
+    margin-left: 0.35rem;
+    vertical-align: middle;
+}
+
+.cron-badge-on { background: #d4edda; color: #155724; }
+.cron-badge-off { background: #f0f0f0; color: #666; }
+.cron-badge-run { background: #fff3cd; color: #856404; }
+
+.cron-last-ok { color: #198754; }
+.cron-last-fail { color: #dc3545; }
+
+.cron-job-logs summary {
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.9rem;
+    padding: 0.35rem 0;
+}
+
+.cron-logs-body {
+    margin-top: 0.75rem;
+    overflow-x: auto;
+}
+
+.cron-log-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8rem;
+}
+
+.cron-log-table th,
+.cron-log-table td {
+    border: 1px solid var(--color-border);
+    padding: 0.4rem 0.5rem;
+    text-align: left;
+    vertical-align: top;
+}
+
+.cron-log-table th {
+    background: var(--color-primary-light);
+}
+
+.cron-log-preview {
+    margin: 0;
+    max-width: 420px;
+    max-height: 120px;
+    overflow: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+    font-size: 0.75rem;
+}
+
+.cron-log-ok td:nth-child(2) { color: #198754; }
+.cron-log-fail td:nth-child(2) { color: #dc3545; }

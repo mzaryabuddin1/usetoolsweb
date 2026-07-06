@@ -9,6 +9,7 @@ $(function () {
     var $empty = $('#tool-search-empty');
     var $count = $('#tools-visible-count');
     var $label = $('#tools-search-label');
+    var $trending = $('#trending-tools-section');
     var totalTools = $('.tool-card').length;
     var listening = false;
     var recognition = null;
@@ -41,6 +42,7 @@ $(function () {
         $count.text(visible);
         $label.text(query ? ' matching "' + $search.val() + '"' : '');
         $empty.toggleClass('hidden', visible > 0);
+        $trending.toggleClass('hidden', query !== '');
     }
 
     function setVoiceStatus(msg) {

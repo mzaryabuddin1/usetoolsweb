@@ -667,6 +667,7 @@ label {
 input[type="text"]:not(.tool-search-input),
 input[type="search"]:not(.tool-search-input),
 input[type="email"],
+input[type="url"],
 input[type="number"],
 input[type="datetime-local"],
 input[type="date"],
@@ -688,6 +689,7 @@ select {
 input[type="text"]::placeholder,
 input[type="search"]:not(.tool-search-input)::placeholder,
 input[type="email"]::placeholder,
+input[type="url"]::placeholder,
 textarea::placeholder {
     color: var(--color-muted);
     opacity: 1;

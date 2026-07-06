@@ -1,6 +1,53 @@
 {
-    "updated_at": null,
+    "updated_at": "2026-07-06T07:11:50+00:00",
     "period_days": 7,
     "source": "google_analytics_4",
-    "tools": []
+    "property_id": "544137758",
+    "tools": [
+        {
+            "slug": "audio-cutter",
+            "title": "Audio Cutter",
+            "description": "Trim audio with waveform. Reorder clips, insert silence, remove blank gaps, export MP3 or WAV.",
+            "icon": "🎵",
+            "category": "utility",
+            "views": 21,
+            "url": "http:\/\/localhost:8000\/audio-cutter"
+        },
+        {
+            "slug": "qr-code-generator",
+            "title": "QR Code Generator",
+            "description": "Custom QR codes — URL, WiFi, vCard, email, SMS, social, Bitcoin, logo & colors. Upload files for temporary QR sharing.",
+            "icon": "📱",
+            "category": "generator",
+            "views": 18,
+            "url": "http:\/\/localhost:8000\/qr-code-generator"
+        },
+        {
+            "slug": "background-remover",
+            "title": "Background Remover",
+            "description": "Remove image backgrounds with AI — runs locally in your browser.",
+            "icon": "✂️",
+            "category": "image",
+            "views": 15,
+            "url": "http:\/\/localhost:8000\/background-remover"
+        },
+        {
+            "slug": "air-share",
+            "title": "Air Share",
+            "description": "Shared clipboard for your team — open the same link, save text and files, everyone sees it instantly.",
+            "icon": "📡",
+            "category": "utility",
+            "views": 14,
+            "url": "http:\/\/localhost:8000\/air-share"
+        },
+        {
+            "slug": "curl-runner",
+            "title": "cURL Runner",
+            "description": "Paste a cURL command from Postman or anywhere, parse it, and send the HTTP request instantly.",
+            "icon": "🌐",
+            "category": "developer",
+            "views": 14,
+            "url": "http:\/\/localhost:8000\/curl-runner"
+        }
+    ]
 }

@@ -44,7 +44,7 @@ define('GA4_PROPERTY_ID', '544137758'); // Numeric property ID from GA Admin (no
 define('GA4_CREDENTIALS_FILE', __DIR__ . '/config/ga-service-account.json');
 define('TRENDING_JSON_FILE', __DIR__ . '/data/trending-tools.json');
 define('TRENDING_CRON_SECRET', 'useTOOLSweb4321'); // Set a long random string; required to run cron URL
-define('TRENDING_MAX_TOOLS', 5);
+define('TRENDING_MAX_TOOLS', 6);
 define('TRENDING_LOOKBACK_DAYS', 7);
 
 /** FFmpeg — leave empty to auto-detect; set full path on server if not in PATH (e.g. /usr/bin/ffmpeg) */
@@ -79,6 +79,18 @@ define('AIR_SHARE_TMP_DIR', __DIR__ . '/tmp/air-shares');
 define('AIR_SHARE_RETENTION_DAYS', 7);
 define('AIR_SHARE_SIGNAL_TTL', 1800);
 
+/** Background remover — Python rembg via cPanel app or local shell */
+define('BG_REMOVE_MAX_BYTES', 15 * 1024 * 1024);
+define('BG_REMOVE_TMP_DIR', __DIR__ . '/tmp/bg-remove');
+define('BG_REMOVE_TIMEOUT', 120);
+/** cPanel Python app URL (no trailing slash). Example: https://usetoolsweb.com/asdsadsadwq */
+define('BG_REMOVE_API_URL', 'https://usetoolsweb.com/asdsadsadwq');
+/** Optional shared secret — set same value in cPanel env BG_REMOVE_API_SECRET */
+define('BG_REMOVE_API_SECRET', '');
+/** Local dev fallback only (leave empty on production when using BG_REMOVE_API_URL) */
+define('PYTHON_BINARY', '');
+define('REMBG_SCRIPT', __DIR__ . '/scripts/rembg-remove.py');
+
 /** Tool categories for home page grouping */
 $TOOL_CATEGORIES = [
     'pdf'        => 'PDF Tools',
@@ -95,7 +107,7 @@ $TOOL_CATEGORIES = [
 $TOOLS = [
     // --- Image ---
     ['slug' => 'compress-image', 'title' => 'Image Compressor', 'description' => 'Reduce JPG and PNG file size without uploading to a server.', 'icon' => '🖼️', 'category' => 'image'],
-    ['slug' => 'background-remover', 'title' => 'Background Remover', 'description' => 'Remove image backgrounds with AI — runs locally in your browser.', 'icon' => '✂️', 'category' => 'image'],
+    ['slug' => 'background-remover', 'title' => 'Background Remover', 'description' => 'Remove image backgrounds with AI — powered by Python rembg on the server.', 'icon' => '✂️', 'category' => 'image'],
     ['slug' => 'resize-image', 'title' => 'Image Resizer', 'description' => 'Resize images to exact width and height or by percentage.', 'icon' => '📐', 'category' => 'image'],
     ['slug' => 'image-converter', 'title' => 'Image Converter', 'description' => 'Convert PNG, JPG, and WebP images to another format.', 'icon' => '🔄', 'category' => 'image'],
     ['slug' => 'image-to-base64', 'title' => 'Image to Base64', 'description' => 'Convert images to Base64 data URIs and back.', 'icon' => '🔢', 'category' => 'image'],

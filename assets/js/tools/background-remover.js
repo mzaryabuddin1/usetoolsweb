@@ -1,10 +1,5 @@
-import { removeBackground } from 'https://esm.sh/@imgly/background-removal@1.5.8';
-
 (function () {
     'use strict';
-
-    // Model + WASM files are hosted by IMG.LY (not bundled in the npm package)
-    var BG_REMOVER_PUBLIC_PATH = 'https://staticimgly.com/@imgly/background-removal-data/1.5.8/dist/';
 
     var dropZone = document.getElementById('bg-drop-zone');
     var fileInput = document.getElementById('bg-file-input');
@@ -18,9 +13,9 @@ import { removeBackground } from 'https://esm.sh/@imgly/background-removal@1.5.8
     var btnReset = document.getElementById('bg-btn-reset');
     var errorEl = document.getElementById('bg-remover-error');
 
-    var originalFile = null;
     var resultBlob = null;
     var outputName = 'no-background.png';
+    var busy = false;
 
     function showError(msg) {
         errorEl.textContent = msg;
@@ -41,13 +36,13 @@ import { removeBackground } from 'https://esm.sh/@imgly/background-removal@1.5.8
     }
 
     async function processFile(file) {
+        if (busy) return;
         if (!file || !/^image\/(jpeg|png|webp)$/i.test(file.type)) {
             showError('Please select a JPG, PNG, or WebP image.');
             return;
         }
 
         hideError();
-        originalFile = file;
         outputName = file.name.replace(/\.[^.]+$/, '') + '-no-bg.png';
 
         var objectUrl = URL.createObjectURL(file);
@@ -56,39 +51,49 @@ import { removeBackground } from 'https://esm.sh/@imgly/background-removal@1.5.8
         resultsWrap.classList.add('hidden');
         dropZone.classList.add('hidden');
         showProgress(true);
-        setProgress('Preparing…', 5);
+        setProgress('Uploading and removing background…', 15);
         btnDownload.disabled = true;
+        busy = true;
 
         try {
-            resultBlob = await removeBackground(file, {
-                publicPath: BG_REMOVER_PUBLIC_PATH,
-                progress: function (key, current, total) {
-                    if (!total) return;
-                    var pct = Math.round((current / total) * 100);
-                    var labels = {
-                        'fetch:model': 'Downloading AI model…',
-                        'compute:inference': 'Removing background…',
-                        'wasm:load': 'Loading engine…'
-                    };
-                    setProgress(labels[key] || 'Processing…', pct);
-                }
-            });
+            var fd = new FormData();
+            fd.append('image', file);
+
+            setProgress('Removing background on server…', 45);
+
+            var res = await fetch('/api/bg-remove.php', { method: 'POST', body: fd });
+
+            if (!res.ok) {
+                var errData = null;
+                try {
+                    errData = await res.json();
+                } catch (e) { /* not json */ }
+                throw new Error((errData && errData.error) || ('Server error (' + res.status + ')'));
+            }
+
+            setProgress('Almost done…', 90);
+            resultBlob = await res.blob();
+            if (!resultBlob || resultBlob.size === 0) {
+                throw new Error('Empty response from server.');
+            }
 
             previewResult.src = URL.createObjectURL(resultBlob);
             resultsWrap.classList.remove('hidden');
             btnDownload.disabled = false;
+            setProgress('Done', 100);
         } catch (err) {
             console.error(err);
-            showError(err.message || 'Background removal failed. Try a smaller image or refresh the page.');
+            showError(err.message || 'Background removal failed.');
             dropZone.classList.remove('hidden');
         } finally {
+            busy = false;
             showProgress(false);
             URL.revokeObjectURL(objectUrl);
         }
     }
 
     dropZone.addEventListener('click', function () {
-        fileInput.click();
+        if (!busy) fileInput.click();
     });
 
     fileInput.addEventListener('change', function () {
@@ -99,7 +104,7 @@ import { removeBackground } from 'https://esm.sh/@imgly/background-removal@1.5.8
 
     dropZone.addEventListener('dragover', function (e) {
         e.preventDefault();
-        dropZone.classList.add('dragover');
+        if (!busy) dropZone.classList.add('dragover');
     });
 
     dropZone.addEventListener('dragleave', function () {
@@ -109,7 +114,7 @@ import { removeBackground } from 'https://esm.sh/@imgly/background-removal@1.5.8
     dropZone.addEventListener('drop', function (e) {
         e.preventDefault();
         dropZone.classList.remove('dragover');
-        if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+        if (!busy && e.dataTransfer.files && e.dataTransfer.files[0]) {
             processFile(e.dataTransfer.files[0]);
         }
     });
@@ -125,7 +130,6 @@ import { removeBackground } from 'https://esm.sh/@imgly/background-removal@1.5.8
     });
 
     btnReset.addEventListener('click', function () {
-        originalFile = null;
         resultBlob = null;
         fileInput.value = '';
         previewOriginal.removeAttribute('src');

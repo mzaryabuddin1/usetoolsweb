@@ -55,7 +55,7 @@ function trending_path_to_slug(string $path): ?string
  *
  * @param array<int, array{path: string, views: int}> $pageViews
  */
-function trending_build_from_page_views(array $pageViews, int $max = 5): array
+function trending_build_from_page_views(array $pageViews, int $max = 6): array
 {
     $max   = max(1, min(20, $max));
     $views = [];
@@ -131,7 +131,7 @@ function trending_refresh_from_ga4(): array
     $propertyId = defined('GA4_PROPERTY_ID') ? GA4_PROPERTY_ID : '';
     $credsFile  = defined('GA4_CREDENTIALS_FILE') ? GA4_CREDENTIALS_FILE : '';
     $days       = defined('TRENDING_LOOKBACK_DAYS') ? (int) TRENDING_LOOKBACK_DAYS : 7;
-    $max        = defined('TRENDING_MAX_TOOLS') ? (int) TRENDING_MAX_TOOLS : 5;
+    $max        = defined('TRENDING_MAX_TOOLS') ? (int) TRENDING_MAX_TOOLS : 6;
 
     $pageViews = ga4_fetch_page_views($propertyId, $credsFile, $days, 80);
     $tools     = trending_build_from_page_views($pageViews, $max);

@@ -3,7 +3,7 @@ require_once __DIR__ . '/config.php';
 
 $meta = page_meta(
     'Background Remover',
-    'Remove image backgrounds online for free. AI-powered, runs in your browser — photos stay on your device.'
+    'Remove image backgrounds online for free. AI-powered background removal using Python rembg on the server.'
 );
 
 require_once __DIR__ . '/includes/header.php';
@@ -12,7 +12,7 @@ require_once __DIR__ . '/includes/header.php';
 <div class="container tool-page">
     <div class="tool-page-header">
         <h1>Background Remover</h1>
-        <p>Remove the background from any photo instantly. Processing runs locally in your browser — nothing is uploaded.</p>
+        <p>Remove the background from any photo. Powered by <strong>Python rembg</strong> on the server — works reliably without browser model downloads.</p>
     </div>
 
     <div class="tool-panel bg-remover-panel">
@@ -23,9 +23,9 @@ require_once __DIR__ . '/includes/header.php';
         <input type="file" id="bg-file-input" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp" class="hidden">
 
         <div id="bg-remover-progress" class="bg-remover-progress hidden">
-            <p id="bg-progress-label">Loading AI model…</p>
+            <p id="bg-progress-label">Uploading image…</p>
             <div class="bg-progress-bar"><div id="bg-progress-fill" class="bg-progress-fill"></div></div>
-            <p class="hint">First run downloads the model (~40 MB). Later runs are much faster.</p>
+            <p class="hint">First request may take longer while the AI model loads on the server.</p>
         </div>
 
         <div id="bg-remover-results" class="hidden">
@@ -57,6 +57,6 @@ require_once __DIR__ . '/includes/header.php';
 </div>
 
 <?php
-$extra_scripts = '<script type="module" src="/assets/js/tools/background-remover.js"></script>';
+$extra_scripts = '<script src="/assets/js/tools/background-remover.js"></script>';
 require_once __DIR__ . '/includes/footer.php';
 ?>

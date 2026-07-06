@@ -43,7 +43,7 @@ define('SHOW_ADSENSE', false);
 define('GA4_PROPERTY_ID', '544137758'); // Numeric property ID from GA Admin (not G-XXXXXXXX)
 define('GA4_CREDENTIALS_FILE', __DIR__ . '/config/ga-service-account.json');
 define('TRENDING_JSON_FILE', __DIR__ . '/data/trending-tools.json');
-define('TRENDING_CRON_SECRET', 'D:}yAaaln&>2ANi1b@a4b:oHS+@Jh4N!g'); // Set a long random string; required to run cron URL
+define('TRENDING_CRON_SECRET', 'useTOOLSweb4321'); // Set a long random string; required to run cron URL
 define('TRENDING_MAX_TOOLS', 5);
 define('TRENDING_LOOKBACK_DAYS', 7);
 

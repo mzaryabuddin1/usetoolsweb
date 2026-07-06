@@ -8,5 +8,6 @@ Thumbs.db
 *.swp
 *~
 tmp/qr-shares/
+tmp/air-shares/
 tmp/video/
 tmp/pdf/

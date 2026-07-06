@@ -58,6 +58,13 @@ define('QR_SHARE_MAX_BYTES', 25 * 1024 * 1024);
 define('QR_SHARE_TMP_DIR', __DIR__ . '/tmp/qr-shares');
 define('QR_SHARE_RETENTION_DAYS', 10);
 
+/** Air Share — local network + temporary link sharing */
+define('AIR_SHARE_MAX_BYTES', 50 * 1024 * 1024);
+define('AIR_SHARE_TEXT_MAX_BYTES', 512 * 1024);
+define('AIR_SHARE_TMP_DIR', __DIR__ . '/tmp/air-shares');
+define('AIR_SHARE_RETENTION_DAYS', 7);
+define('AIR_SHARE_SIGNAL_TTL', 1800);
+
 /** Tool categories for home page grouping */
 $TOOL_CATEGORIES = [
     'pdf'        => 'PDF Tools',
@@ -126,6 +133,7 @@ $TOOLS = [
     ['slug' => 'binary-converter', 'title' => 'Binary Converter', 'description' => 'Convert text to binary and binary back to text.', 'icon' => '01', 'category' => 'utility'],
     ['slug' => 'roman-numerals', 'title' => 'Roman Numerals Converter', 'description' => 'Convert numbers to Roman numerals and back.', 'icon' => 'Ⅻ', 'category' => 'utility'],
     ['slug' => 'timezone-converter', 'title' => 'Timezone Converter', 'description' => 'Convert date and time between timezones.', 'icon' => '🌍', 'category' => 'utility'],
+    ['slug' => 'air-share', 'title' => 'Air Share', 'description' => 'Shared clipboard for your team — open the same link, save text and files, everyone sees it instantly.', 'icon' => '📡', 'category' => 'utility'],
     // --- PDF Tools (Organize) ---
     ['slug' => 'pdf-tools', 'title' => 'All PDF Tools', 'description' => 'Browse every PDF tool — merge, split, compress, convert, edit, and secure PDFs.', 'icon' => '📚', 'category' => 'pdf'],
     ['slug' => 'pdf-merge', 'title' => 'Merge PDF', 'description' => 'Combine multiple PDF files into one document in order.', 'icon' => '📎', 'category' => 'pdf'],

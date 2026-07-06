@@ -43,9 +43,26 @@ if ($uri === '/api/qr-share-upload' || $uri === '/api/qr-share-upload.php') {
     require __DIR__ . '/api/qr-share-upload.php';
     return true;
 }
+if ($uri === '/api/air-share-create' || $uri === '/api/air-share-create.php') {
+    require __DIR__ . '/api/air-share-create.php';
+    return true;
+}
+if ($uri === '/api/air-share-signal' || $uri === '/api/air-share-signal.php') {
+    require __DIR__ . '/api/air-share-signal.php';
+    return true;
+}
+if ($uri === '/api/air-share-desk' || $uri === '/api/air-share-desk.php') {
+    require __DIR__ . '/api/air-share-desk.php';
+    return true;
+}
 if (preg_match('#^/f/([a-f0-9]{32})$#', $uri, $shareMatch)) {
     $_GET['token'] = $shareMatch[1];
     require __DIR__ . '/share-download.php';
+    return true;
+}
+if (preg_match('#^/s/([a-f0-9]{32})$#', $uri, $textMatch)) {
+    $_GET['token'] = $textMatch[1];
+    require __DIR__ . '/share-view.php';
     return true;
 }
 

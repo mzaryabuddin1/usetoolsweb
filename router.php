@@ -63,6 +63,10 @@ if ($uri === '/api/bg-remove' || $uri === '/api/bg-remove.php') {
     require __DIR__ . '/api/bg-remove.php';
     return true;
 }
+if ($uri === '/api/email-test' || $uri === '/api/email-test.php') {
+    require __DIR__ . '/api/email-test.php';
+    return true;
+}
 if (preg_match('#^/f/([a-f0-9]{32})$#', $uri, $shareMatch)) {
     $_GET['token'] = $shareMatch[1];
     require __DIR__ . '/share-download.php';

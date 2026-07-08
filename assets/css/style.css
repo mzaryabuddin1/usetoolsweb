@@ -668,6 +668,7 @@ input[type="text"]:not(.tool-search-input),
 input[type="search"]:not(.tool-search-input),
 input[type="email"],
 input[type="url"],
+input[type="password"],
 input[type="number"],
 input[type="datetime-local"],
 input[type="date"],
@@ -2584,3 +2585,76 @@ select:focus {
 
 .cron-log-ok td:nth-child(2) { color: #198754; }
 .cron-log-fail td:nth-child(2) { color: #dc3545; }
+
+/* Email config tester */
+.email-test-privacy {
+    margin-bottom: 1.5rem;
+}
+
+.email-test-section {
+    margin-bottom: 1.75rem;
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.email-test-section:last-of-type {
+    border-bottom: none;
+}
+
+.email-test-section-title {
+    font-size: 1.05rem;
+    margin: 0 0 1rem;
+}
+
+.email-test-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.email-test-full {
+    grid-column: 1 / -1;
+}
+
+@media (max-width: 600px) {
+    .email-test-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.email-preset-hint {
+    margin-top: 0.5rem;
+}
+
+.email-pass-wrap {
+    display: flex;
+    gap: 0.5rem;
+    align-items: stretch;
+}
+
+.email-pass-wrap input {
+    flex: 1;
+    min-width: 0;
+}
+
+.email-test-auth-fields .email-test-grid {
+    width: 100%;
+}
+
+.email-test-result {
+    margin-top: 1.5rem;
+}
+
+.email-test-log {
+    margin: 0.75rem 0 0;
+    padding: 1rem;
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    font-family: ui-monospace, "Cascadia Code", monospace;
+    font-size: 0.8rem;
+    white-space: pre-wrap;
+    word-break: break-word;
+    max-height: 280px;
+    overflow: auto;
+}

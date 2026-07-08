@@ -88,6 +88,10 @@ define('LIBREOFFICE_BINARY', '');
 define('CURL_PROXY_MAX_BYTES', 10 * 1024 * 1024);
 define('CURL_PROXY_TIMEOUT', 30);
 
+/** Email config tester — SMTP test timeout and max message size */
+define('EMAIL_TEST_TIMEOUT', 30);
+define('EMAIL_TEST_MAX_BODY_BYTES', 64 * 1024);
+
 /** QR file share — temporary uploads for QR download links */
 define('QR_SHARE_MAX_BYTES', 25 * 1024 * 1024);
 define('QR_SHARE_TMP_DIR', __DIR__ . '/tmp/qr-shares');
@@ -148,6 +152,7 @@ $TOOLS = [
     ['slug' => 'timestamp-converter', 'title' => 'Timestamp Converter', 'description' => 'Live Unix ms clock, convert epochs, ISO 8601, HTTP date, Windows ticks, NTP, GPS, and code snippets.', 'icon' => '🕐', 'category' => 'developer'],
     ['slug' => 'curl-runner', 'title' => 'cURL Runner', 'description' => 'Paste a cURL command from Postman or anywhere, parse it, and send the HTTP request instantly.', 'icon' => '🌐', 'category' => 'developer'],
     ['slug' => 'cron-job-service', 'title' => 'Cron Job Service', 'description' => 'Schedule HTTP requests to any URL on a timer with request/response logs saved in your browser.', 'icon' => '⏰', 'category' => 'developer'],
+    ['slug' => 'email-config-tester', 'title' => 'Email Config Tester', 'description' => 'Test SMTP or mail settings (SendGrid, Gmail, Mailgun, SES). We never save your credentials.', 'icon' => '📧', 'category' => 'developer'],
     // --- Text ---
     ['slug' => 'word-counter', 'title' => 'Word Counter', 'description' => 'Count words, characters, sentences, and reading time.', 'icon' => '📝', 'category' => 'text'],
     ['slug' => 'text-analyzer', 'title' => 'Text Analyzer', 'description' => 'Analyze text: lines, bytes, unique words, and more.', 'icon' => '📊', 'category' => 'text'],

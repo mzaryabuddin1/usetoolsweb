@@ -10,21 +10,113 @@ $(function () {
     var $count = $('#tools-visible-count');
     var $label = $('#tools-search-label');
     var $trending = $('#trending-tools-section');
-    var totalTools = $('.tool-card').length;
+    var $catNav = $('#tool-category-nav');
+    var $catBar = $('#cat-nav-bar');
+    var $catScroll = $('#cat-nav-scroll');
+    var $catPrev = $('#cat-nav-prev');
+    var $catNext = $('#cat-nav-next');
     var listening = false;
     var recognition = null;
+    var activeCat = 'all';
+    var PREVIEW_COUNT = 6;
 
     if (!$search.length) return;
+
+    function updateCatNavArrows() {
+        var el = $catScroll[0];
+        if (!el) return;
+
+        var overflow = el.scrollWidth > el.clientWidth + 2;
+        $catBar.toggleClass('has-overflow', overflow);
+
+        if (!overflow) {
+            $catPrev.prop('disabled', true);
+            $catNext.prop('disabled', true);
+            return;
+        }
+
+        $catPrev.prop('disabled', el.scrollLeft <= 2);
+        $catNext.prop('disabled', el.scrollLeft + el.clientWidth >= el.scrollWidth - 2);
+    }
+
+    function scrollCatNavBy(delta) {
+        var el = $catScroll[0];
+        if (!el) return;
+        el.scrollBy({ left: delta, behavior: 'smooth' });
+    }
+
+    function scrollActiveCatBtnIntoView() {
+        var $active = $catNav.find('.cat-nav-btn.active');
+        if (!$active.length) return;
+        $active[0].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    }
+
+    function setCategoryFilter(cat) {
+        activeCat = cat;
+        $catNav.find('.cat-nav-btn').removeClass('active');
+        $catNav.find('.cat-nav-btn[data-cat="' + cat + '"]').addClass('active');
+
+        $('.tool-category').each(function () {
+            var $category = $(this);
+            var key = $category.data('cat-key');
+            var show = cat === 'all' || key === cat;
+            $category.toggleClass('cat-filter-hidden', !show);
+        });
+
+        if (cat !== 'all') {
+            var $target = $('#cat-' + cat);
+            $target.removeClass('is-collapsed');
+            updateToggleLabel($target);
+        }
+
+        updateVisibleCount();
+        scrollActiveCatBtnIntoView();
+        setTimeout(updateCatNavArrows, 300);
+    }
+
+    function updateVisibleCount() {
+        var visible = 0;
+        $('.tool-category').each(function () {
+            if ($(this).hasClass('cat-filter-hidden') || $(this).hasClass('hidden')) {
+                return;
+            }
+            visible += $(this).find('.tool-card:not(.hidden)').length;
+        });
+        $count.text(visible);
+    }
+
+    function updateToggleLabel($category) {
+        var $btn = $category.find('.cat-toggle-btn');
+        if (!$btn.length) return;
+
+        var total = parseInt($category.data('tool-count'), 10) || 0;
+        var collapsed = $category.hasClass('is-collapsed');
+        $btn.text(collapsed ? 'Show all ' + total + ' tools' : 'Show fewer');
+        $btn.attr('aria-expanded', collapsed ? 'false' : 'true');
+    }
 
     function filterTools() {
         var query = $.trim($search.val()).toLowerCase();
         var visible = 0;
+        var searching = query !== '';
 
-        $clear.toggleClass('hidden', query === '');
-        $bar.toggleClass('has-clear', query !== '');
+        $clear.toggleClass('hidden', !searching);
+        $bar.toggleClass('has-clear', searching);
+
+        if (searching) {
+            setCategoryFilter('all');
+            $('.tool-category').removeClass('is-collapsed');
+            $('.tool-category').each(function () {
+                updateToggleLabel($(this));
+            });
+        }
 
         $('.tool-category').each(function () {
             var $category = $(this);
+            if ($category.hasClass('cat-filter-hidden')) {
+                return;
+            }
+
             var categoryVisible = 0;
 
             $category.find('.tool-card').each(function () {
@@ -39,10 +131,11 @@ $(function () {
             visible += categoryVisible;
         });
 
-        $count.text(visible);
         $label.text(query ? ' matching "' + $search.val() + '"' : '');
         $empty.toggleClass('hidden', visible > 0);
-        $trending.toggleClass('hidden', query !== '');
+        $trending.toggleClass('hidden', searching);
+        $catBar.toggleClass('hidden', searching);
+        updateVisibleCount();
     }
 
     function setVoiceStatus(msg) {
@@ -114,6 +207,42 @@ $(function () {
             }
         });
     }
+
+    $catPrev.on('click', function () {
+        scrollCatNavBy(-220);
+    });
+
+    $catNext.on('click', function () {
+        scrollCatNavBy(220);
+    });
+
+    $catScroll.on('scroll', updateCatNavArrows);
+    $(window).on('resize', updateCatNavArrows);
+    updateCatNavArrows();
+
+    $catNav.on('click', '.cat-nav-btn', function () {
+        var cat = $(this).data('cat');
+        setCategoryFilter(cat);
+
+        if (cat !== 'all') {
+            var $target = $('#cat-' + cat);
+            if ($target.length) {
+                $target[0].scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        } else {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    });
+
+    $('#tools').on('click', '.cat-toggle-btn', function () {
+        var $category = $(this).closest('.tool-category');
+        $category.toggleClass('is-collapsed');
+        updateToggleLabel($category);
+    });
+
+    $('.tool-category-collapsible').each(function () {
+        updateToggleLabel($(this));
+    });
 
     $search.on('input', filterTools);
 

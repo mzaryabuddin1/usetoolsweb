@@ -120,9 +120,8 @@ define('BG_REMOVE_API_SECRET', '');
 define('PYTHON_BINARY', '');
 define('REMBG_SCRIPT', __DIR__ . '/scripts/rembg-remove.py');
 
-/** Tool categories for home page grouping */
+/** Tool categories for home page grouping (PDF last — largest section) */
 $TOOL_CATEGORIES = [
-    'pdf'        => 'PDF Tools',
     'image'      => 'Image Tools',
     'developer'  => 'Developer Tools',
     'text'       => 'Text Tools',
@@ -130,6 +129,7 @@ $TOOL_CATEGORIES = [
     'generator'  => 'Generators',
     'seo'        => 'SEO Tools',
     'utility'    => 'Utilities',
+    'pdf'        => 'PDF Tools',
 ];
 
 /** Tools registry */

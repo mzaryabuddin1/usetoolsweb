@@ -72,9 +72,46 @@ require_once __DIR__ . '/includes/header.php';
 
 <section id="tools" class="container">
     <p id="tool-search-empty" class="tool-search-empty hidden">No tools match your search. Try keywords like <em>image</em>, <em>json</em>, or <em>calculator</em>.</p>
-    <?php foreach (tools_by_category() as $catKey => $group): ?>
-        <div class="tool-category" id="cat-<?= htmlspecialchars($catKey) ?>" data-category="<?= htmlspecialchars(strtolower($group['label'])) ?>">
-            <h2 class="section-title"><?= htmlspecialchars($group['label']) ?></h2>
+
+    <div class="cat-nav-bar" id="cat-nav-bar">
+        <button type="button" class="cat-nav-arrow cat-nav-prev" id="cat-nav-prev" aria-label="Scroll categories left" disabled>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+        </button>
+        <div class="cat-nav-scroll" id="cat-nav-scroll">
+            <nav class="tool-category-nav" id="tool-category-nav" aria-label="Browse tools by category">
+                <button type="button" class="cat-nav-btn active" data-cat="all">All tools</button>
+                <?php foreach (tools_by_category() as $catKey => $group): ?>
+                    <button type="button" class="cat-nav-btn" data-cat="<?= htmlspecialchars($catKey) ?>">
+                        <?= htmlspecialchars($group['label']) ?>
+                        <span class="cat-nav-count"><?= count($group['tools']) ?></span>
+                    </button>
+                <?php endforeach; ?>
+            </nav>
+        </div>
+        <button type="button" class="cat-nav-arrow cat-nav-next" id="cat-nav-next" aria-label="Scroll categories right">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M8.59 16.59 13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg>
+        </button>
+    </div>
+
+    <?php foreach (tools_by_category() as $catKey => $group):
+        $toolCount = count($group['tools']);
+        $isLarge = $toolCount > 8;
+    ?>
+        <div
+            class="tool-category<?= $isLarge ? ' tool-category-collapsible is-collapsed' : '' ?>"
+            id="cat-<?= htmlspecialchars($catKey) ?>"
+            data-category="<?= htmlspecialchars(strtolower($group['label'])) ?>"
+            data-cat-key="<?= htmlspecialchars($catKey) ?>"
+            data-tool-count="<?= (int) $toolCount ?>"
+        >
+            <div class="tool-category-head">
+                <h2 class="section-title"><?= htmlspecialchars($group['label']) ?> <span class="cat-badge"><?= (int) $toolCount ?></span></h2>
+                <?php if ($isLarge): ?>
+                    <button type="button" class="btn btn-secondary btn-sm cat-toggle-btn" aria-expanded="false">
+                        Show all <?= (int) $toolCount ?> tools
+                    </button>
+                <?php endif; ?>
+            </div>
             <div class="tools-grid">
                 <?php foreach ($group['tools'] as $tool):
                     $searchText = strtolower(implode(' ', [

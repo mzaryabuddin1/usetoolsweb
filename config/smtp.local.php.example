@@ -1,0 +1,13 @@
+<?php
+/**
+ * Copy to smtp.local.php and fill in your mail server details.
+ */
+define('SITE_URL_FIXED', 'https://usetoolsweb.com');
+define('SMTP_HOST', 'mail.example.com');
+define('SMTP_PORT', 465);
+define('SMTP_ENCRYPTION', 'ssl'); // ssl | tls | none
+define('SMTP_USERNAME', 'hello@example.com');
+define('SMTP_PASSWORD', 'your-smtp-password');
+define('SMTP_FROM_EMAIL', 'hello@example.com');
+define('SMTP_FROM_NAME', 'Your Site Name');
+define('CONTACT_TO_EMAIL', 'hello@example.com');

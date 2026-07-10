@@ -11,12 +11,22 @@ define('QUICKTOOLS_CONFIG_LOADED', true); // legacy alias
 
 define('SITE_NAME', 'usetoolsweb');
 define('SITE_DOMAIN', 'usetoolsweb.com');
-/** Optional: force canonical base URL on production (leave empty to auto-detect) */
-define('SITE_URL_FIXED', '');
+
+/** Production overrides (SMTP, SITE_URL_FIXED) — config/smtp.local.php is gitignored */
+if (is_file(__DIR__ . '/config/smtp.local.php')) {
+    require_once __DIR__ . '/config/smtp.local.php';
+}
+
+if (!defined('SITE_URL_FIXED')) {
+    define('SITE_URL_FIXED', '');
+}
 define('SITE_TAGLINE', 'Free Online Tools — Fast, Simple, Private');
 define('SITE_DESCRIPTION', 'Free online tools for everyday tasks — PDF tools, image tools, calculators, developer utilities, text tools, and more. All in your browser.');
 define('SITE_AUTHOR', 'usetoolsweb');
 define('SITE_EMAIL', 'hello@usetoolsweb.com');
+
+/** Google AdSense publisher ID — replace pub-000… in ads.txt after approval */
+define('ADSENSE_PUBLISHER_ID', '');
 
 if (!defined('SITE_URL')) {
     /** Set on production if auto-detect is wrong, e.g. https://usetoolsweb.com */
@@ -323,6 +333,7 @@ function all_site_urls(): array
         ['loc' => rtrim(SITE_URL, '/') . '/', 'priority' => '1.0', 'changefreq' => 'weekly'],
         ['loc' => tool_url('about'), 'priority' => '0.5', 'changefreq' => 'monthly'],
         ['loc' => tool_url('privacy'), 'priority' => '0.3', 'changefreq' => 'monthly'],
+        ['loc' => tool_url('terms'), 'priority' => '0.3', 'changefreq' => 'monthly'],
         ['loc' => tool_url('contact'), 'priority' => '0.4', 'changefreq' => 'monthly'],
     ];
 

@@ -17,12 +17,20 @@
             </div>
             <div class="footer-links">
                 <a href="<?= rtrim(SITE_URL, '/') ?>/about">About</a>
+                <a href="<?= rtrim(SITE_URL, '/') ?>/terms">Terms</a>
                 <a href="<?= rtrim(SITE_URL, '/') ?>/privacy">Privacy Policy</a>
                 <a href="<?= rtrim(SITE_URL, '/') ?>/contact">Contact</a>
             </div>
             <p class="footer-copy">&copy; <?= date('Y') ?> <?= htmlspecialchars(SITE_NAME) ?>. All rights reserved.</p>
         </div>
     </footer>
+
+    <div id="cookie-consent" class="cookie-consent hidden" role="dialog" aria-label="Cookie notice">
+        <div class="cookie-consent-inner container">
+            <p>We use cookies for analytics and, when enabled, advertising (Google AdSense). See our <a href="<?= htmlspecialchars(tool_url('privacy')) ?>">Privacy Policy</a> and <a href="<?= htmlspecialchars(tool_url('terms')) ?>">Terms</a>.</p>
+            <button type="button" class="btn btn-primary btn-sm" id="cookie-accept">Accept</button>
+        </div>
+    </div>
 
     <?php /* AccessibleWeb Widget — MIT https://github.com/ifrederico/accessible-web-widget */ ?>
     <div
@@ -39,6 +47,7 @@
 
     <script src="/assets/js/theme-toggle.js"></script>
     <script src="/assets/js/main.js"></script>
+    <script src="/assets/js/cookie-consent.js"></script>
     <?php if (!empty($extra_scripts)) echo $extra_scripts; ?>
 </body>
 </html>

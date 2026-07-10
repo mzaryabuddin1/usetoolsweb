@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/includes/contact-mail-helper.php';
 
 $meta = page_meta(
     'Contact',
@@ -14,13 +15,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email   = trim($_POST['email'] ?? '');
     $message = trim($_POST['message'] ?? '');
 
-    if ($name === '' || $email === '' || $message === '') {
-        $error = 'Please fill in all fields.';
-    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $error = 'Please enter a valid email address.';
-    } else {
-        // Replace with mail() or SMTP when hosting is set up
+    try {
+        contact_send_message($name, $email, $message);
         $sent = true;
+    } catch (InvalidArgumentException $e) {
+        $error = $e->getMessage();
+    } catch (Throwable $e) {
+        $error = $e->getMessage();
     }
 }
 
@@ -32,7 +33,7 @@ require_once __DIR__ . '/includes/header.php';
     <p>Have a question, suggestion, or found a bug? We'd love to hear from you.</p>
 
     <?php if ($sent): ?>
-        <div class="alert alert-success">Thank you! Your message has been received. We'll get back to you soon.</div>
+        <div class="alert alert-success">Thank you! Your message has been sent. We'll get back to you soon.</div>
     <?php else: ?>
         <?php if ($error): ?>
             <div class="alert alert-error"><?= htmlspecialchars($error) ?></div>

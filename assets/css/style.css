@@ -677,6 +677,46 @@ a:hover { text-decoration: underline; }
     border-bottom: none;
 }
 
+.home-intro {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.home-intro p {
+    color: var(--color-muted);
+    line-height: 1.65;
+    max-width: 820px;
+}
+
+.cookie-consent {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 200;
+    background: var(--color-surface);
+    border-top: 1px solid var(--color-border);
+    box-shadow: 0 -4px 20px rgba(15, 23, 42, 0.12);
+    padding: 0.85rem 0;
+}
+
+.cookie-consent-inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem 1rem;
+}
+
+.cookie-consent p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--color-muted);
+    flex: 1;
+    min-width: 220px;
+}
+
 .hero-badge {
     display: inline-block;
     background: var(--color-primary-light);

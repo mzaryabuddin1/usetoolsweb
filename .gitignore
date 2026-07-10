@@ -13,4 +13,5 @@ tmp/video/
 tmp/pdf/
 tmp/bg-remove/
 config/ga-service-account.json
+config/smtp.local.php
 data/trending-tools.json

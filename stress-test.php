@@ -9,6 +9,7 @@ require_once __DIR__ . '/includes/header.php';
         <p>Send multiple concurrent HTTP requests to test endpoint stability. Use responsibly — only test URLs you own or have permission to load test.</p>
     </div>
     <div class="tool-panel dev-tool-panel">
+        <div class="alert alert-info">Only test URLs and mail servers you own or have permission to use. Do not use for spam or unauthorized load testing.</div>
         <div class="dev-form-grid">
             <div class="dev-form-full"><label for="stress-url">Target URL</label><input type="url" id="stress-url" placeholder="https://your-api.example.com/health"></div>
             <div><label for="stress-method">Method</label><select id="stress-method"><option>GET</option><option>POST</option><option>HEAD</option></select></div>

@@ -25,6 +25,9 @@ require_once __DIR__ . '/includes/header.php';
     <h2>Third-party advertising</h2>
     <p>We may use Google AdSense to display ads. Google may use cookies to serve ads based on your prior visits to this or other websites. You can opt out of personalized advertising by visiting <a href="https://www.google.com/settings/ads" target="_blank" rel="noopener">Google Ads Settings</a>.</p>
 
+    <h2>Terms of Service</h2>
+    <p>Your use of this website is also governed by our <a href="<?= htmlspecialchars(tool_url('terms')) ?>">Terms of Service</a>.</p>
+
     <h2>Contact</h2>
     <p>If you have questions about this privacy policy, contact us at <a href="mailto:<?= htmlspecialchars(SITE_EMAIL) ?>"><?= htmlspecialchars(SITE_EMAIL) ?></a>.</p>
 </div>

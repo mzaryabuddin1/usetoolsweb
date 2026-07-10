@@ -49,6 +49,16 @@ require_once __DIR__ . '/includes/header.php';
     </div>
 </section>
 
+<section class="home-intro container">
+    <h2 class="section-title">What is <?= htmlspecialchars(SITE_NAME) ?>?</h2>
+    <p>
+        <?= htmlspecialchars(SITE_NAME) ?> is a free collection of <strong><?= count($TOOLS) ?> online tools</strong> for developers, designers, students, and everyday tasks —
+        image editing, PDF processing, JSON formatting, calculators, QR codes, SEO helpers, and more.
+        Most tools run in your browser for privacy; server-based tools delete your files after processing.
+    </p>
+    <p class="hint">Use the search bar above, browse by category below, or jump to a section with the category toolbar.</p>
+</section>
+
 <?php if (!empty($trendingTools)): ?>
 <section id="trending-tools-section" class="trending-tools container">
     <div class="trending-tools-head">

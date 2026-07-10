@@ -1,3 +1,9 @@
+    <?php
+    if (empty($skip_tool_guide)) {
+        require_once __DIR__ . '/tool-guide.php';
+        render_tool_guide(tool_guide_slug_from_request());
+    }
+    ?>
     </main>
     <footer class="site-footer">
         <div class="container footer-inner">

@@ -916,6 +916,32 @@ select:focus {
 
 .content-page h1 { margin-top: 0; }
 .content-page h2 { margin-top: 2rem; }
+.content-page h3 { margin-top: 1.25rem; font-size: 1.05rem; }
+
+.tool-guide-wrap {
+    margin-top: 0;
+    padding-bottom: 2.5rem;
+}
+
+.tool-guide {
+    margin-top: 0;
+    padding-top: 2rem;
+    border-top: 1px solid var(--color-border);
+}
+
+.tool-guide h2:first-child { margin-top: 0; }
+
+.tool-faq dt {
+    font-weight: 700;
+    margin-top: 1rem;
+}
+
+.tool-faq dd {
+    margin: 0.35rem 0 0;
+    color: var(--color-muted);
+}
+
+.tool-related-list li { margin-bottom: 0.5rem; }
 
 /* Ad placeholder */
 .ad-slot {

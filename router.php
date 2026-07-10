@@ -96,6 +96,7 @@ if ($uri !== '/') {
     $slug = trim($uri, '/');
     $phpFile = __DIR__ . '/' . $slug . '.php';
     if (is_file($phpFile)) {
+        $GLOBALS['tool_guide_slug'] = $slug;
         require $phpFile;
         return true;
     }

@@ -92,6 +92,10 @@ define('CURL_PROXY_TIMEOUT', 30);
 define('EMAIL_TEST_TIMEOUT', 30);
 define('EMAIL_TEST_MAX_BODY_BYTES', 64 * 1024);
 
+/** Site audit & speed test */
+define('SITE_AUDIT_TIMEOUT', 25);
+define('SPEED_TEST_MAX_BYTES', 5 * 1024 * 1024);
+
 /** QR file share — temporary uploads for QR download links */
 define('QR_SHARE_MAX_BYTES', 25 * 1024 * 1024);
 define('QR_SHARE_TMP_DIR', __DIR__ . '/tmp/qr-shares');
@@ -153,6 +157,11 @@ $TOOLS = [
     ['slug' => 'curl-runner', 'title' => 'cURL Runner', 'description' => 'Paste a cURL command from Postman or anywhere, parse it, and send the HTTP request instantly.', 'icon' => '🌐', 'category' => 'developer'],
     ['slug' => 'cron-job-service', 'title' => 'Cron Job Service', 'description' => 'Schedule HTTP requests to any URL on a timer with request/response logs saved in your browser.', 'icon' => '⏰', 'category' => 'developer'],
     ['slug' => 'email-config-tester', 'title' => 'Email Config Tester', 'description' => 'Test SMTP or mail settings (SendGrid, Gmail, Mailgun, SES). We never save your credentials.', 'icon' => '📧', 'category' => 'developer'],
+    ['slug' => 'internet-speed-test', 'title' => 'Internet Speed Test', 'description' => 'Measure download, upload, and ping using your connection to this server.', 'icon' => '⚡', 'category' => 'utility'],
+    ['slug' => 'xml-html-beautifier', 'title' => 'XML & HTML Beautifier', 'description' => 'Beautify or minify XML and HTML markup in your browser.', 'icon' => '📐', 'category' => 'developer'],
+    ['slug' => 'stress-test', 'title' => 'Stress Test', 'description' => 'HTTP load test — send concurrent requests and view latency stats.', 'icon' => '🔥', 'category' => 'developer'],
+    ['slug' => 'css-js-minifier', 'title' => 'CSS & JS Minifier', 'description' => 'Minify CSS and JavaScript to reduce file size.', 'icon' => '🗜️', 'category' => 'developer'],
+    ['slug' => 'postman-to-swagger', 'title' => 'Postman to Swagger', 'description' => 'Convert Postman Collection JSON to OpenAPI 3.0 Swagger spec.', 'icon' => '🔄', 'category' => 'developer'],
     // --- Text ---
     ['slug' => 'word-counter', 'title' => 'Word Counter', 'description' => 'Count words, characters, sentences, and reading time.', 'icon' => '📝', 'category' => 'text'],
     ['slug' => 'text-analyzer', 'title' => 'Text Analyzer', 'description' => 'Analyze text: lines, bytes, unique words, and more.', 'icon' => '📊', 'category' => 'text'],
@@ -180,6 +189,9 @@ $TOOLS = [
     ['slug' => 'slug-generator', 'title' => 'Slug Generator', 'description' => 'Convert titles to URL-friendly slugs.', 'icon' => '🔤', 'category' => 'seo'],
     ['slug' => 'sitemap-generator', 'title' => 'Sitemap Generator', 'description' => 'Create an XML sitemap from a list of URLs.', 'icon' => '🗺️', 'category' => 'seo'],
     ['slug' => 'robots-txt-generator', 'title' => 'Robots.txt Generator', 'description' => 'Generate robots.txt files for your website.', 'icon' => '🤖', 'category' => 'seo'],
+    ['slug' => 'seo-report', 'title' => 'SEO Report', 'description' => 'On-page SEO audit — title, meta tags, headings, links, and more.', 'icon' => '📊', 'category' => 'seo'],
+    ['slug' => 'lighthouse-report', 'title' => 'Lighthouse Report', 'description' => 'Simplified Lighthouse-style audit — performance, SEO, accessibility scores.', 'icon' => '💡', 'category' => 'seo'],
+    ['slug' => 'vapt-report', 'title' => 'VAPT Report', 'description' => 'Security header scan and basic VAPT surface report for any URL.', 'icon' => '🛡️', 'category' => 'seo'],
     // --- Utility / Converters ---
     ['slug' => 'color-converter', 'title' => 'Color Converter', 'description' => 'Convert colors between HEX, RGB, and HSL with live preview.', 'icon' => '🎨', 'category' => 'utility'],
     ['slug' => 'unit-converter', 'title' => 'Unit Converter', 'description' => 'Convert length, weight, and temperature units.', 'icon' => '📏', 'category' => 'utility'],

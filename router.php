@@ -67,6 +67,14 @@ if ($uri === '/api/email-test' || $uri === '/api/email-test.php') {
     require __DIR__ . '/api/email-test.php';
     return true;
 }
+if ($uri === '/api/site-audit' || $uri === '/api/site-audit.php') {
+    require __DIR__ . '/api/site-audit.php';
+    return true;
+}
+if ($uri === '/api/speed-test' || $uri === '/api/speed-test.php') {
+    require __DIR__ . '/api/speed-test.php';
+    return true;
+}
 if (preg_match('#^/f/([a-f0-9]{32})$#', $uri, $shareMatch)) {
     $_GET['token'] = $shareMatch[1];
     require __DIR__ . '/share-download.php';

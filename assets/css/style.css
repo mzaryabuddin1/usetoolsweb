@@ -2521,6 +2521,29 @@ select:focus {
     cursor: pointer;
 }
 
+.qr-fg-colors {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.35rem;
+}
+
+.qr-fg-colors input[type="color"] {
+    flex: 1;
+    min-width: 0;
+}
+
+.qr-gradient-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+@media (max-width: 560px) {
+    .qr-gradient-row {
+        grid-template-columns: 1fr;
+    }
+}
+
 .qr-design-grid select,
 .qr-design-grid input[type="range"] {
     width: 100%;
@@ -2528,6 +2551,76 @@ select:focus {
 
 .qr-logo-clear {
     margin-top: 0.5rem;
+}
+
+.qr-logo-picker {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 0.35rem;
+    padding: 0.65rem 0.85rem;
+    border: 1px dashed var(--color-border);
+    border-radius: 10px;
+    background: var(--color-bg);
+    transition: border-color 0.15s, background 0.15s;
+}
+
+.qr-logo-picker:hover,
+.qr-logo-picker.dragover {
+    border-color: var(--color-primary);
+    background: var(--color-primary-light);
+}
+
+.qr-logo-picker.has-file {
+    border-style: solid;
+}
+
+.qr-logo-picker-btn {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.45rem 0.9rem;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    background: var(--color-surface, var(--color-bg));
+    color: var(--color-text);
+    font-family: inherit;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+}
+
+.qr-logo-picker-btn:hover {
+    border-color: var(--color-primary);
+    background: var(--color-primary-light);
+    color: var(--color-primary);
+}
+
+.qr-logo-filename {
+    flex: 1;
+    min-width: 0;
+    font-size: 0.85rem;
+    color: var(--color-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.qr-logo-picker.has-file .qr-logo-filename {
+    color: var(--color-text);
+    font-weight: 500;
+}
+
+.qr-logo-thumb {
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    object-fit: contain;
+    border-radius: 6px;
+    border: 1px solid var(--color-border);
+    background: #fff;
 }
 
 .qr-studio-preview {

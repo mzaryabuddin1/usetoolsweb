@@ -30,9 +30,31 @@ require_once __DIR__ . '/includes/header.php';
                 <section class="qr-studio-section qr-design-section">
                     <h2 class="qr-studio-heading">2. Customize design</h2>
                     <div class="qr-design-grid">
-                        <div>
-                            <label for="qr-fg-color">Foreground</label>
-                            <input type="color" id="qr-fg-color" value="#0a2558">
+                        <div class="qr-design-full">
+                            <label for="qr-fg-mode">Foreground</label>
+                            <select id="qr-fg-mode">
+                                <option value="solid" selected>Solid color</option>
+                                <option value="gradient">Gradient</option>
+                            </select>
+                            <div class="qr-fg-colors">
+                                <input type="color" id="qr-fg-color" value="#0a2558" title="Foreground color">
+                                <input type="color" id="qr-fg-color-2" value="#3b82f6" title="Gradient end color" class="qr-gradient-only hidden">
+                            </div>
+                        </div>
+                        <div id="qr-gradient-options" class="qr-design-full qr-gradient-options hidden">
+                            <div class="qr-gradient-row">
+                                <div>
+                                    <label for="qr-gradient-type">Gradient type</label>
+                                    <select id="qr-gradient-type">
+                                        <option value="linear" selected>Linear</option>
+                                        <option value="radial">Radial</option>
+                                    </select>
+                                </div>
+                                <div id="qr-gradient-rotation-wrap">
+                                    <label for="qr-gradient-rotation">Angle: <span id="qr-gradient-rotation-value">45</span>°</label>
+                                    <input type="range" id="qr-gradient-rotation" min="0" max="360" value="45" step="5">
+                                </div>
+                            </div>
                         </div>
                         <div>
                             <label for="qr-bg-color">Background</label>
@@ -57,8 +79,13 @@ require_once __DIR__ . '/includes/header.php';
                             </select>
                         </div>
                         <div class="qr-design-full">
-                            <label for="qr-logo-input">Logo image <span class="hint">(optional, max 2 MB)</span></label>
-                            <input type="file" id="qr-logo-input" accept="image/png,image/jpeg,image/gif,image/svg+xml,.png,.jpg,.gif,.svg">
+                            <label>Logo image <span class="hint">(optional, max 2 MB)</span></label>
+                            <div class="qr-logo-picker" id="qr-logo-picker">
+                                <label for="qr-logo-input" class="qr-logo-picker-btn">Choose image</label>
+                                <input type="file" id="qr-logo-input" class="hidden" accept="image/png,image/jpeg,image/gif,image/svg+xml,.png,.jpg,.gif,.svg">
+                                <span class="qr-logo-filename" id="qr-logo-filename">PNG, JPG, GIF, or SVG</span>
+                                <img class="qr-logo-thumb hidden" id="qr-logo-thumb" alt="" width="36" height="36">
+                            </div>
                             <button type="button" class="btn btn-secondary btn-sm qr-logo-clear hidden" id="qr-logo-clear">Remove logo</button>
                         </div>
                         <div class="qr-design-full">

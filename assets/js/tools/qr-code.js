@@ -223,15 +223,43 @@ import QRCodeStyling from 'https://esm.sh/qr-code-styling@1.6.0-rc.1';
         var size = parseInt($('#qr-size').val(), 10) || 400;
         return {
             size: size,
+            fgMode: $('#qr-fg-mode').val() || 'solid',
             fg: $('#qr-fg-color').val(),
+            fg2: $('#qr-fg-color-2').val(),
+            gradientType: $('#qr-gradient-type').val() || 'linear',
+            gradientRotation: parseInt($('#qr-gradient-rotation').val(), 10) || 0,
             bg: $('#qr-bg-color').val(),
             dotsType: $('#qr-dot-style').val(),
             cornersType: $('#qr-corner-style').val()
         };
     }
 
+    function buildForegroundStyle(d) {
+        if (d.fgMode === 'gradient') {
+            return {
+                gradient: {
+                    type: d.gradientType,
+                    rotation: (d.gradientRotation * Math.PI) / 180,
+                    colorStops: [
+                        { offset: 0, color: d.fg },
+                        { offset: 1, color: d.fg2 }
+                    ]
+                }
+            };
+        }
+        return { color: d.fg };
+    }
+
+    function toggleGradientUi() {
+        var isGradient = $('#qr-fg-mode').val() === 'gradient';
+        $('.qr-gradient-only, #qr-gradient-options').toggleClass('hidden', !isGradient);
+        $('#qr-gradient-rotation-wrap').toggleClass('hidden', !isGradient || $('#qr-gradient-type').val() === 'radial');
+    }
+
     function renderQr(data) {
         var d = getDesignOptions();
+        var fgStyle = buildForegroundStyle(d);
+        var cornerDotType = d.cornersType === 'dot' ? 'dot' : 'square';
         var opts = {
             width: d.size,
             height: d.size,
@@ -240,9 +268,9 @@ import QRCodeStyling from 'https://esm.sh/qr-code-styling@1.6.0-rc.1';
             image: logoDataUrl || undefined,
             margin: 8,
             qrOptions: { errorCorrectionLevel: logoDataUrl ? 'H' : 'M' },
-            dotsOptions: { color: d.fg, type: d.dotsType },
-            cornersSquareOptions: { color: d.fg, type: d.cornersType },
-            cornersDotOptions: { color: d.fg, type: d.cornersType === 'dot' ? 'dot' : 'square' },
+            dotsOptions: Object.assign({ type: d.dotsType }, fgStyle),
+            cornersSquareOptions: Object.assign({ type: d.cornersType }, fgStyle),
+            cornersDotOptions: Object.assign({ type: cornerDotType }, fgStyle),
             backgroundOptions: { color: d.bg },
             imageOptions: { crossOrigin: 'anonymous', margin: 8, imageSize: 0.35 }
         };
@@ -280,6 +308,55 @@ import QRCodeStyling from 'https://esm.sh/qr-code-styling@1.6.0-rc.1';
                 '<span class="qr-type-icon">' + t.icon + '</span><span>' + t.label + '</span></button>';
         }).join('');
         $('#qr-type-grid').html(html);
+    }
+
+    function processLogoFile(file) {
+        if (!file) return;
+        if (file.size > 2 * 1024 * 1024) {
+            showError('Logo max size is 2 MB.');
+            $('#qr-logo-input').val('');
+            updateLogoPickerUi(null, '');
+            return;
+        }
+        hideError();
+        var reader = new FileReader();
+        reader.onload = function (e) {
+            logoDataUrl = e.target.result;
+            updateLogoPickerUi(file, logoDataUrl);
+            if (hasQr) {
+                try { renderQr(buildPayload(currentType)); } catch (err) { /* ignore */ }
+            }
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function updateLogoPickerUi(file, previewUrl) {
+        var $filename = $('#qr-logo-filename');
+        var $thumb = $('#qr-logo-thumb');
+        var $picker = $('#qr-logo-picker');
+        var $clear = $('#qr-logo-clear');
+
+        if (file && previewUrl) {
+            $filename.text(file.name);
+            $thumb.attr('src', previewUrl).removeClass('hidden');
+            $picker.addClass('has-file');
+            $clear.removeClass('hidden');
+            return;
+        }
+
+        $filename.text('PNG, JPG, GIF, or SVG');
+        $thumb.attr('src', '').addClass('hidden');
+        $picker.removeClass('has-file');
+        $clear.addClass('hidden');
+    }
+
+    function clearLogo() {
+        logoDataUrl = '';
+        $('#qr-logo-input').val('');
+        updateLogoPickerUi(null, '');
+        if (hasQr) {
+            try { renderQr(buildPayload(currentType)); } catch (e) { /* ignore */ }
+        }
     }
 
     function renderTypeForm(type) {
@@ -386,6 +463,7 @@ import QRCodeStyling from 'https://esm.sh/qr-code-styling@1.6.0-rc.1';
 
     $(function () {
         renderTypeForm('url');
+        toggleGradientUi();
 
         $('#qr-type-grid').on('click', '.qr-type-chip', function () {
             var type = $(this).data('type');
@@ -406,7 +484,30 @@ import QRCodeStyling from 'https://esm.sh/qr-code-styling@1.6.0-rc.1';
             }
         });
 
-        $('#qr-fg-color, #qr-bg-color, #qr-dot-style, #qr-corner-style').on('change', function () {
+        $('#qr-fg-mode').on('change', function () {
+            toggleGradientUi();
+            if (hasQr) {
+                try {
+                    renderQr(buildPayload(currentType));
+                } catch (e) { /* ignore */ }
+            }
+        });
+
+        $('#qr-gradient-rotation').on('input', function () {
+            $('#qr-gradient-rotation-value').text($(this).val());
+            if (hasQr) {
+                try {
+                    renderQr(buildPayload(currentType));
+                } catch (e) { /* ignore */ }
+            }
+        });
+
+        $('#qr-fg-color, #qr-fg-color-2, #qr-bg-color, #qr-dot-style, #qr-corner-style, #qr-gradient-type').on('change', function () {
+            if ($('#qr-gradient-type').val() === 'radial') {
+                $('#qr-gradient-rotation-wrap').addClass('hidden');
+            } else if ($('#qr-fg-mode').val() === 'gradient') {
+                $('#qr-gradient-rotation-wrap').removeClass('hidden');
+            }
             if (hasQr) {
                 try {
                     renderQr(buildPayload(currentType));
@@ -415,31 +516,20 @@ import QRCodeStyling from 'https://esm.sh/qr-code-styling@1.6.0-rc.1';
         });
 
         $('#qr-logo-input').on('change', function () {
-            var file = this.files && this.files[0];
-            if (!file) return;
-            if (file.size > 2 * 1024 * 1024) {
-                showError('Logo max size is 2 MB.');
-                this.value = '';
-                return;
-            }
-            var reader = new FileReader();
-            reader.onload = function (e) {
-                logoDataUrl = e.target.result;
-                $('#qr-logo-clear').removeClass('hidden');
-                if (hasQr) {
-                    try { renderQr(buildPayload(currentType)); } catch (err) { /* ignore */ }
-                }
-            };
-            reader.readAsDataURL(file);
+            processLogoFile(this.files && this.files[0]);
         });
 
-        $('#qr-logo-clear').on('click', function () {
-            logoDataUrl = '';
-            $('#qr-logo-input').val('');
-            $(this).addClass('hidden');
-            if (hasQr) {
-                try { renderQr(buildPayload(currentType)); } catch (e) { /* ignore */ }
-            }
+        $('#qr-logo-clear').on('click', clearLogo);
+
+        $('#qr-logo-picker').on('dragover', function (e) {
+            e.preventDefault();
+            $(this).addClass('dragover');
+        }).on('dragleave drop', function (e) {
+            e.preventDefault();
+            $(this).removeClass('dragover');
+        }).on('drop', function (e) {
+            var files = e.originalEvent.dataTransfer.files;
+            if (files && files[0]) processLogoFile(files[0]);
         });
 
         $('#btn-download-png').on('click', function () {

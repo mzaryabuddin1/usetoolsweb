@@ -10,6 +10,7 @@ import QRCodeStyling from 'https://esm.sh/qr-code-styling@1.6.0-rc.1';
     var shareUrl = '';
     var uploading = false;
     var hasQr = false;
+    var parsedGradientCss = null;
 
     var $ = window.jQuery;
 
@@ -221,11 +222,12 @@ import QRCodeStyling from 'https://esm.sh/qr-code-styling@1.6.0-rc.1';
 
     function getDesignOptions() {
         var size = parseInt($('#qr-size').val(), 10) || 400;
+        var fgMode = $('#qr-fg-mode').val() || 'solid';
         return {
             size: size,
-            fgMode: $('#qr-fg-mode').val() || 'solid',
-            fg: $('#qr-fg-color').val(),
-            fg2: $('#qr-fg-color-2').val(),
+            fgMode: fgMode,
+            fg: fgMode === 'solid' ? $('#qr-fg-color').val() : $('#qr-fg-gradient-start').val(),
+            fg2: $('#qr-fg-gradient-end').val(),
             gradientType: $('#qr-gradient-type').val() || 'linear',
             gradientRotation: parseInt($('#qr-gradient-rotation').val(), 10) || 0,
             bg: $('#qr-bg-color').val(),
@@ -236,6 +238,18 @@ import QRCodeStyling from 'https://esm.sh/qr-code-styling@1.6.0-rc.1';
 
     function buildForegroundStyle(d) {
         if (d.fgMode === 'gradient') {
+            if (parsedGradientCss) {
+                var rotation = parsedGradientCss.type === 'linear'
+                    ? (parseInt($('#qr-gradient-rotation').val(), 10) || parsedGradientCss.rotation || 0)
+                    : 0;
+                return {
+                    gradient: {
+                        type: parsedGradientCss.type,
+                        rotation: (rotation * Math.PI) / 180,
+                        colorStops: parsedGradientCss.colorStops
+                    }
+                };
+            }
             return {
                 gradient: {
                     type: d.gradientType,
@@ -250,10 +264,232 @@ import QRCodeStyling from 'https://esm.sh/qr-code-styling@1.6.0-rc.1';
         return { color: d.fg };
     }
 
-    function toggleGradientUi() {
-        var isGradient = $('#qr-fg-mode').val() === 'gradient';
-        $('.qr-gradient-only, #qr-gradient-options').toggleClass('hidden', !isGradient);
-        $('#qr-gradient-rotation-wrap').toggleClass('hidden', !isGradient || $('#qr-gradient-type').val() === 'radial');
+    function cssAngleToDegrees(value, unit) {
+        var n = parseFloat(value);
+        switch ((unit || 'deg').toLowerCase()) {
+            case 'grad': return n * 0.9;
+            case 'rad': return n * (180 / Math.PI);
+            case 'turn': return n * 360;
+            default: return n;
+        }
+    }
+
+    function cssDirectionToDegrees(dir) {
+        var key = dir.replace(/\s+/g, ' ').trim().toLowerCase();
+        var map = {
+            'to top': 0,
+            'to right': 90,
+            'to bottom': 180,
+            'to left': 270,
+            'to top right': 45,
+            'to right top': 45,
+            'to bottom right': 135,
+            'to right bottom': 135,
+            'to bottom left': 225,
+            'to left bottom': 225,
+            'to top left': 315,
+            'to left top': 315
+        };
+        return Object.prototype.hasOwnProperty.call(map, key) ? map[key] : 0;
+    }
+
+    function colorToPickerHex(color) {
+        if (/^#[0-9a-f]{6}$/i.test(color)) {
+            return color;
+        }
+        var el = document.createElement('div');
+        el.style.color = color;
+        document.body.appendChild(el);
+        var rgb = window.getComputedStyle(el).color;
+        document.body.removeChild(el);
+        var m = rgb.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+        if (!m) {
+            return '#000000';
+        }
+        return '#' + [m[1], m[2], m[3]].map(function (n) {
+            return parseInt(n, 10).toString(16).padStart(2, '0');
+        }).join('');
+    }
+
+    function parseCssGradient(css) {
+        var trimmed = css.trim();
+        if (!trimmed) {
+            return null;
+        }
+
+        var isLinear = /^linear-gradient\s*\(/i.test(trimmed);
+        var isRadial = /^radial-gradient\s*\(/i.test(trimmed);
+        if (!isLinear && !isRadial) {
+            return null;
+        }
+
+        var open = trimmed.indexOf('(');
+        var close = trimmed.lastIndexOf(')');
+        if (open === -1 || close === -1 || close <= open) {
+            return null;
+        }
+
+        var inner = trimmed.slice(open + 1, close).trim();
+        var rotation = isLinear ? 180 : 0;
+        var rest = inner;
+
+        if (isLinear) {
+            var angleMatch = rest.match(/^(-?\d+(?:\.\d+)?)(deg|grad|rad|turn)\s*,\s*/i);
+            if (angleMatch) {
+                rotation = cssAngleToDegrees(angleMatch[1], angleMatch[2]);
+                rest = rest.slice(angleMatch[0].length);
+            } else {
+                var dirMatch = rest.match(/^to\s+(?:left|right|top|bottom)(?:\s+(?:left|right|top|bottom))?\s*,\s*/i);
+                if (dirMatch) {
+                    rotation = cssDirectionToDegrees(dirMatch[0].replace(/,\s*$/, ''));
+                    rest = rest.slice(dirMatch[0].length);
+                }
+            }
+        }
+
+        var stopPattern = /(rgba?\s*\([^)]+\)|hsla?\s*\([^)]+\)|#[0-9a-fA-F]{3,8})\s*(\d+(?:\.\d+)?%)?/gi;
+        var stops = [];
+        var match;
+        while ((match = stopPattern.exec(rest)) !== null) {
+            stops.push({
+                color: match[1].trim(),
+                offset: match[2] ? parseFloat(match[2]) / 100 : null
+            });
+        }
+
+        if (stops.length === 0) {
+            return null;
+        }
+
+        if (stops.length === 1) {
+            stops[0].offset = 0;
+        } else {
+            stops.forEach(function (stop, index) {
+                if (stop.offset === null) {
+                    stop.offset = index / (stops.length - 1);
+                }
+            });
+        }
+
+        return {
+            type: isLinear ? 'linear' : 'radial',
+            rotation: rotation,
+            colorStops: stops.map(function (stop) {
+                return { offset: stop.offset, color: stop.color };
+            })
+        };
+    }
+
+    function buildCssGradientPreview(parsed) {
+        var stops = parsed.colorStops.map(function (stop) {
+            return stop.color + ' ' + Math.round(stop.offset * 100) + '%';
+        }).join(', ');
+
+        if (parsed.type === 'radial') {
+            return 'radial-gradient(circle, ' + stops + ')';
+        }
+
+        return 'linear-gradient(' + Math.round(parsed.rotation) + 'deg, ' + stops + ')';
+    }
+
+    function updateCssGradientPreview() {
+        if (!parsedGradientCss) {
+            return;
+        }
+        $('#qr-gradient-css-preview').css('background', buildCssGradientPreview(parsedGradientCss)).removeClass('hidden');
+    }
+
+    function setGradientRotation(angle) {
+        var value = Math.max(0, Math.min(360, parseInt(angle, 10) || 0));
+        $('#qr-gradient-rotation').val(value);
+        $('#qr-gradient-rotation-value').text(value);
+
+        if (parsedGradientCss && parsedGradientCss.type === 'linear') {
+            parsedGradientCss.rotation = value;
+            updateCssGradientPreview();
+        }
+    }
+
+    function clearCssGradientOverride() {
+        parsedGradientCss = null;
+        $('#qr-gradient-css-preview').addClass('hidden').css('background', '');
+        $('#qr-gradient-css-error').addClass('hidden').text('');
+    }
+
+    function clearManualGradientOverride() {
+        clearCssGradientOverride();
+        $('#qr-gradient-css').val('');
+    }
+
+    function syncGradientControlsFromParsed(parsed) {
+        setGradientType(parsed.type);
+        if (parsed.type === 'linear') {
+            setGradientRotation(parsed.rotation);
+        }
+        if (parsed.colorStops.length >= 1) {
+            $('#qr-fg-gradient-start').val(colorToPickerHex(parsed.colorStops[0].color));
+        }
+        if (parsed.colorStops.length >= 2) {
+            $('#qr-fg-gradient-end').val(colorToPickerHex(parsed.colorStops[parsed.colorStops.length - 1].color));
+        }
+    }
+
+    function applyCssGradientFromInput() {
+        var css = $('#qr-gradient-css').val().trim();
+        if (!css) {
+            clearCssGradientOverride();
+            refreshForegroundQr();
+            return true;
+        }
+
+        var parsed = parseCssGradient(css);
+        if (!parsed) {
+            parsedGradientCss = null;
+            $('#qr-gradient-css-preview').addClass('hidden');
+            $('#qr-gradient-css-error').text('Could not parse gradient. Use linear-gradient(...) or radial-gradient(...) with color stops.').removeClass('hidden');
+            refreshForegroundQr();
+            return false;
+        }
+
+        parsedGradientCss = parsed;
+        updateCssGradientPreview();
+        $('#qr-gradient-css-error').addClass('hidden');
+        syncGradientControlsFromParsed(parsed);
+        refreshForegroundQr();
+        return true;
+    }
+
+    function setGradientType(type) {
+        $('#qr-gradient-type').val(type);
+        $('.qr-gradient-type-btn').removeClass('active').attr('aria-selected', 'false');
+        $('.qr-gradient-type-btn[data-type="' + type + '"]').addClass('active').attr('aria-selected', 'true');
+        $('#qr-gradient-rotation-wrap').toggleClass('hidden', type === 'radial');
+    }
+
+    function setForegroundMode(mode) {
+        var prev = $('#qr-fg-mode').val();
+        if (mode === 'gradient' && prev === 'solid') {
+            $('#qr-fg-gradient-start').val($('#qr-fg-color').val());
+        } else if (mode === 'solid' && prev === 'gradient') {
+            $('#qr-fg-color').val($('#qr-fg-gradient-start').val());
+        }
+
+        $('#qr-fg-mode').val(mode);
+        $('.qr-fg-mode-btn').removeClass('active').attr('aria-selected', 'false');
+        $('.qr-fg-mode-btn[data-mode="' + mode + '"]').addClass('active').attr('aria-selected', 'true');
+        $('#qr-fg-solid-panel').toggleClass('hidden', mode !== 'solid');
+        $('#qr-fg-gradient-panel').toggleClass('hidden', mode !== 'gradient');
+        if (mode === 'gradient') {
+            applyCssGradientFromInput();
+        }
+    }
+
+    function refreshForegroundQr() {
+        if (hasQr) {
+            try {
+                renderQr(buildPayload(currentType));
+            } catch (e) { /* ignore */ }
+        }
     }
 
     function renderQr(data) {
@@ -291,6 +527,9 @@ import QRCodeStyling from 'https://esm.sh/qr-code-styling@1.6.0-rc.1';
 
     function generateQR() {
         try {
+            if ($('#qr-fg-mode').val() === 'gradient') {
+                applyCssGradientFromInput();
+            }
             var payload = buildPayload(currentType);
             if (!payload) throw new Error('Please fill in the required fields.');
             hideError();
@@ -463,7 +702,8 @@ import QRCodeStyling from 'https://esm.sh/qr-code-styling@1.6.0-rc.1';
 
     $(function () {
         renderTypeForm('url');
-        toggleGradientUi();
+        setForegroundMode('solid');
+        setGradientType('linear');
 
         $('#qr-type-grid').on('click', '.qr-type-chip', function () {
             var type = $(this).data('type');
@@ -484,35 +724,42 @@ import QRCodeStyling from 'https://esm.sh/qr-code-styling@1.6.0-rc.1';
             }
         });
 
-        $('#qr-fg-mode').on('change', function () {
-            toggleGradientUi();
-            if (hasQr) {
-                try {
-                    renderQr(buildPayload(currentType));
-                } catch (e) { /* ignore */ }
-            }
+        $('.qr-fg-mode-toggle').on('click', '.qr-fg-mode-btn', function () {
+            var mode = $(this).data('mode');
+            if (mode === $('#qr-fg-mode').val()) return;
+            setForegroundMode(mode);
+            refreshForegroundQr();
+        });
+
+        $('.qr-gradient-type-toggle').on('click', '.qr-gradient-type-btn', function () {
+            var type = $(this).data('type');
+            if (type === $('#qr-gradient-type').val()) return;
+            clearManualGradientOverride();
+            setGradientType(type);
+            refreshForegroundQr();
         });
 
         $('#qr-gradient-rotation').on('input', function () {
-            $('#qr-gradient-rotation-value').text($(this).val());
-            if (hasQr) {
-                try {
-                    renderQr(buildPayload(currentType));
-                } catch (e) { /* ignore */ }
-            }
+            setGradientRotation($(this).val());
+            refreshForegroundQr();
         });
 
-        $('#qr-fg-color, #qr-fg-color-2, #qr-bg-color, #qr-dot-style, #qr-corner-style, #qr-gradient-type').on('change', function () {
-            if ($('#qr-gradient-type').val() === 'radial') {
-                $('#qr-gradient-rotation-wrap').addClass('hidden');
-            } else if ($('#qr-fg-mode').val() === 'gradient') {
-                $('#qr-gradient-rotation-wrap').removeClass('hidden');
-            }
-            if (hasQr) {
-                try {
-                    renderQr(buildPayload(currentType));
-                } catch (e) { /* ignore */ }
-            }
+        $('#qr-fg-color, #qr-bg-color, #qr-dot-style, #qr-corner-style').on('change', refreshForegroundQr);
+
+        $('#qr-fg-gradient-start, #qr-fg-gradient-end').on('change', function () {
+            clearManualGradientOverride();
+            refreshForegroundQr();
+        });
+
+        var cssGradientTimer = null;
+        $('#qr-gradient-css').on('input', function () {
+            clearTimeout(cssGradientTimer);
+            cssGradientTimer = setTimeout(applyCssGradientFromInput, 350);
+        });
+
+        $('#qr-gradient-css').on('paste', function () {
+            clearTimeout(cssGradientTimer);
+            cssGradientTimer = setTimeout(applyCssGradientFromInput, 100);
         });
 
         $('#qr-logo-input').on('change', function () {

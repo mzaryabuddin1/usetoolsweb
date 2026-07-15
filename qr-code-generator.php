@@ -30,29 +30,45 @@ require_once __DIR__ . '/includes/header.php';
                 <section class="qr-studio-section qr-design-section">
                     <h2 class="qr-studio-heading">2. Customize design</h2>
                     <div class="qr-design-grid">
-                        <div class="qr-design-full">
-                            <label for="qr-fg-mode">Foreground</label>
-                            <select id="qr-fg-mode">
-                                <option value="solid" selected>Solid color</option>
-                                <option value="gradient">Gradient</option>
-                            </select>
-                            <div class="qr-fg-colors">
-                                <input type="color" id="qr-fg-color" value="#0a2558" title="Foreground color">
-                                <input type="color" id="qr-fg-color-2" value="#3b82f6" title="Gradient end color" class="qr-gradient-only hidden">
+                        <div class="qr-design-full qr-fg-section">
+                            <label>Foreground</label>
+                            <div class="qr-fg-mode-toggle" role="tablist" aria-label="Foreground style">
+                                <button type="button" class="qr-fg-mode-btn active" data-mode="solid" role="tab" aria-selected="true">Solid</button>
+                                <button type="button" class="qr-fg-mode-btn" data-mode="gradient" role="tab" aria-selected="false">Gradient</button>
                             </div>
-                        </div>
-                        <div id="qr-gradient-options" class="qr-design-full qr-gradient-options hidden">
-                            <div class="qr-gradient-row">
-                                <div>
-                                    <label for="qr-gradient-type">Gradient type</label>
-                                    <select id="qr-gradient-type">
-                                        <option value="linear" selected>Linear</option>
-                                        <option value="radial">Radial</option>
-                                    </select>
+                            <input type="hidden" id="qr-fg-mode" value="solid">
+
+                            <div id="qr-fg-solid-panel" class="qr-fg-panel">
+                                <label for="qr-fg-color">Color</label>
+                                <input type="color" id="qr-fg-color" value="#0a2558" title="Foreground color">
+                            </div>
+
+                            <div id="qr-fg-gradient-panel" class="qr-fg-panel hidden">
+                                <div class="qr-fg-colors-row">
+                                    <div>
+                                        <label for="qr-fg-gradient-start">Start color</label>
+                                        <input type="color" id="qr-fg-gradient-start" value="#0a2558" title="Gradient start">
+                                    </div>
+                                    <div>
+                                        <label for="qr-fg-gradient-end">End color</label>
+                                        <input type="color" id="qr-fg-gradient-end" value="#3b82f6" title="Gradient end">
+                                    </div>
                                 </div>
+                                <div class="qr-gradient-type-toggle" role="tablist" aria-label="Gradient type">
+                                    <button type="button" class="qr-gradient-type-btn active" data-type="linear" role="tab" aria-selected="true">Linear</button>
+                                    <button type="button" class="qr-gradient-type-btn" data-type="radial" role="tab" aria-selected="false">Radial</button>
+                                </div>
+                                <input type="hidden" id="qr-gradient-type" value="linear">
                                 <div id="qr-gradient-rotation-wrap">
                                     <label for="qr-gradient-rotation">Angle: <span id="qr-gradient-rotation-value">45</span>°</label>
                                     <input type="range" id="qr-gradient-rotation" min="0" max="360" value="45" step="5">
+                                </div>
+                                <div class="qr-gradient-css-wrap">
+                                    <label for="qr-gradient-css">Or paste CSS gradient</label>
+                                    <textarea id="qr-gradient-css" rows="3" placeholder="linear-gradient(45deg, rgba(13, 83, 189, 1) 0%, rgba(19, 176, 168, 1) 30%, rgba(21, 176, 60, 1) 50%, rgba(93, 156, 17, 1) 70%, rgba(242, 213, 0, 1) 100%)"></textarea>
+                                    <div id="qr-gradient-css-preview" class="qr-gradient-css-preview hidden" aria-hidden="true"></div>
+                                    <p id="qr-gradient-css-hint" class="hint">Supports <code>linear-gradient(...)</code> and <code>radial-gradient(...)</code> with multiple color stops.</p>
+                                    <p id="qr-gradient-css-error" class="qr-gradient-css-error hidden"></p>
                                 </div>
                             </div>
                         </div>

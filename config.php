@@ -184,7 +184,7 @@ $TOOLS = [
     ['slug' => 'regex-tester', 'title' => 'Regex Tester', 'description' => 'Test regular expressions against sample text.', 'icon' => '🔍', 'category' => 'developer'],
     ['slug' => 'markdown-preview', 'title' => 'Markdown Preview', 'description' => 'Write Markdown and preview rendered HTML live.', 'icon' => '📖', 'category' => 'developer'],
     ['slug' => 'css-minifier', 'title' => 'CSS Minifier', 'description' => 'Minify CSS code by removing whitespace and comments.', 'icon' => '🎨', 'category' => 'developer'],
-    ['slug' => 'css-generator', 'title' => 'CSS Generator', 'description' => 'Generate CSS visually — box shadow builder with drag-and-drop offset control.', 'icon' => '✨', 'category' => 'developer'],
+    ['slug' => 'css-generator', 'title' => 'Box Shadow CSS Generator', 'description' => 'Generate box-shadow CSS with live preview and drag-and-drop offset control.', 'icon' => '✨', 'category' => 'developer'],
     ['slug' => 'code-minifier', 'title' => 'HTML/JS Minifier', 'description' => 'Minify HTML or JavaScript code.', 'icon' => '💻', 'category' => 'developer'],
     ['slug' => 'timestamp-converter', 'title' => 'Timestamp Converter', 'description' => 'Live Unix ms clock, convert epochs, ISO 8601, HTTP date, Windows ticks, NTP, GPS, and code snippets.', 'icon' => '🕐', 'category' => 'developer'],
     ['slug' => 'curl-runner', 'title' => 'cURL Runner', 'description' => 'Paste a cURL command from Postman or anywhere, parse it, and send the HTTP request instantly.', 'icon' => '🌐', 'category' => 'developer'],

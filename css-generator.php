@@ -2,8 +2,8 @@
 require_once __DIR__ . '/config.php';
 
 $meta = page_meta(
-    'CSS Generator',
-    'Free CSS generator tools — create box-shadow CSS with live preview. Drag the shadow handle or use arrow keys.'
+    'Box Shadow CSS Generator',
+    'Free box shadow CSS generator with live preview. Drag the shadow handle, set blur, spread, color, and copy CSS instantly.'
 );
 
 require_once __DIR__ . '/includes/header.php';
@@ -11,12 +11,12 @@ require_once __DIR__ . '/includes/header.php';
 
 <div class="container tool-page">
     <div class="tool-page-header">
-        <h1>CSS Generator</h1>
-        <p>Build CSS visually and copy the code. Start with the <strong>box shadow</strong> generator — adjust properties, preview live, and drag the shadow handle (or use arrow keys) to set offset.</p>
+        <h1>Box Shadow CSS Generator</h1>
+        <p>Build box shadows visually and copy the CSS. Adjust offset, blur, spread, and color — drag the shadow handle or use arrow keys to position it.</p>
     </div>
 
     <div class="tool-panel css-gen-panel">
-        <h2 class="css-gen-section-title">Box shadow</h2>
+        <h2 class="css-gen-section-title">Settings</h2>
 
         <div class="css-gen-layout">
             <div class="css-gen-controls">

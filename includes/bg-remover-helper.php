@@ -31,6 +31,9 @@ function bg_remove_max_bytes(): int
 
 function bg_remove_api_url(): string
 {
+    if (function_exists('python_tools_use_local_shell') && python_tools_use_local_shell()) {
+        return '';
+    }
     return defined('BG_REMOVE_API_URL') ? rtrim((string) BG_REMOVE_API_URL, '/') : '';
 }
 

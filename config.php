@@ -130,6 +130,27 @@ define('BG_REMOVE_API_SECRET', '');
 define('PYTHON_BINARY', '');
 define('REMBG_SCRIPT', __DIR__ . '/scripts/rembg-remove.py');
 
+/**
+ * On localhost, Python tools use local shell scripts instead of the remote cPanel API.
+ * Override in config/smtp.local.php:
+ *   define('PYTHON_FORCE_LOCAL_SHELL', true);
+ *   define('PYTHON_FORCE_REMOTE_API', true);
+ */
+function python_tools_use_local_shell(): bool
+{
+    if (defined('PYTHON_FORCE_REMOTE_API') && PYTHON_FORCE_REMOTE_API) {
+        return false;
+    }
+    if (defined('PYTHON_FORCE_LOCAL_SHELL') && PYTHON_FORCE_LOCAL_SHELL) {
+        return true;
+    }
+
+    $host = strtolower((string) ($_SERVER['HTTP_HOST'] ?? ''));
+    $host = preg_replace('/:\d+$/', '', $host);
+
+    return in_array($host, ['localhost', '127.0.0.1', '[::1]'], true);
+}
+
 /** Tool categories for home page grouping (PDF last — largest section) */
 $TOOL_CATEGORIES = [
     'image'      => 'Image Tools',
@@ -151,6 +172,7 @@ $TOOLS = [
     ['slug' => 'image-converter', 'title' => 'Image Converter', 'description' => 'Convert PNG, JPG, and WebP images to another format.', 'icon' => '🔄', 'category' => 'image'],
     ['slug' => 'image-to-base64', 'title' => 'Image to Base64', 'description' => 'Convert images to Base64 data URIs and back.', 'icon' => '🔢', 'category' => 'image'],
     ['slug' => 'favicon-generator', 'title' => 'Favicon Generator', 'description' => 'Create favicon PNGs from any image in multiple sizes.', 'icon' => '⭐', 'category' => 'image'],
+    ['slug' => 'image-to-text', 'title' => 'Image to Text', 'description' => 'Extract text from images with OCR — upload a photo or paste from clipboard.', 'icon' => '📝', 'category' => 'image'],
     // --- Developer ---
     ['slug' => 'json-formatter', 'title' => 'JSON Formatter', 'description' => 'Validate, beautify, or minify JSON instantly.', 'icon' => '{ }', 'category' => 'developer'],
     ['slug' => 'base64-encode-decode', 'title' => 'Base64 Encoder/Decoder', 'description' => 'Encode or decode text and strings to Base64 format.', 'icon' => '🔤', 'category' => 'developer'],
@@ -162,6 +184,7 @@ $TOOLS = [
     ['slug' => 'regex-tester', 'title' => 'Regex Tester', 'description' => 'Test regular expressions against sample text.', 'icon' => '🔍', 'category' => 'developer'],
     ['slug' => 'markdown-preview', 'title' => 'Markdown Preview', 'description' => 'Write Markdown and preview rendered HTML live.', 'icon' => '📖', 'category' => 'developer'],
     ['slug' => 'css-minifier', 'title' => 'CSS Minifier', 'description' => 'Minify CSS code by removing whitespace and comments.', 'icon' => '🎨', 'category' => 'developer'],
+    ['slug' => 'css-generator', 'title' => 'CSS Generator', 'description' => 'Generate CSS visually — box shadow builder with drag-and-drop offset control.', 'icon' => '✨', 'category' => 'developer'],
     ['slug' => 'code-minifier', 'title' => 'HTML/JS Minifier', 'description' => 'Minify HTML or JavaScript code.', 'icon' => '💻', 'category' => 'developer'],
     ['slug' => 'timestamp-converter', 'title' => 'Timestamp Converter', 'description' => 'Live Unix ms clock, convert epochs, ISO 8601, HTTP date, Windows ticks, NTP, GPS, and code snippets.', 'icon' => '🕐', 'category' => 'developer'],
     ['slug' => 'curl-runner', 'title' => 'cURL Runner', 'description' => 'Paste a cURL command from Postman or anywhere, parse it, and send the HTTP request instantly.', 'icon' => '🌐', 'category' => 'developer'],

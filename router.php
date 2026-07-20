@@ -86,6 +86,12 @@ if (preg_match('#^/s/([a-f0-9]{32})$#', $uri, $textMatch)) {
     return true;
 }
 
+// Legacy redirects
+if ($uri === '/css-generator') {
+    header('Location: /box-shadow-css-generator', true, 301);
+    return true;
+}
+
 // Serve static files as-is
 if ($uri !== '/' && is_file(__DIR__ . $uri)) {
     return false;

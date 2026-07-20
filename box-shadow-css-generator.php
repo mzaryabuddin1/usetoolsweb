@@ -101,6 +101,6 @@ require_once __DIR__ . '/includes/header.php';
 </div>
 
 <?php
-$extra_scripts = '<script src="/assets/js/tools/css-generator.js"></script>';
+$extra_scripts = '<script src="/assets/js/tools/box-shadow-css-generator.js"></script>';
 require_once __DIR__ . '/includes/footer.php';
 ?>

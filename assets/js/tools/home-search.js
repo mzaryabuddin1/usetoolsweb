@@ -95,6 +95,20 @@ $(function () {
         $btn.attr('aria-expanded', collapsed ? 'false' : 'true');
     }
 
+    function syncSearchQueryParam() {
+        var query = $.trim($search.val());
+        var url = new URL(window.location.href);
+        if (query) {
+            url.searchParams.set('q', query);
+        } else {
+            url.searchParams.delete('q');
+        }
+        var next = url.pathname + url.search + url.hash;
+        if (window.location.pathname + window.location.search + window.location.hash !== next) {
+            window.history.replaceState(null, '', next);
+        }
+    }
+
     function filterTools() {
         var query = $.trim($search.val()).toLowerCase();
         var visible = 0;
@@ -136,6 +150,7 @@ $(function () {
         $trending.toggleClass('hidden', searching);
         $catBar.toggleClass('hidden', searching);
         updateVisibleCount();
+        syncSearchQueryParam();
     }
 
     function setVoiceStatus(msg) {
@@ -262,4 +277,11 @@ $(function () {
     });
 
     initVoiceSearch();
+
+    var initialQuery = new URLSearchParams(window.location.search).get('q');
+    if (initialQuery) {
+        $search.val(initialQuery);
+        filterTools();
+        document.getElementById('tools')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
 });

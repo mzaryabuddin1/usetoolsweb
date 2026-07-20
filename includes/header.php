@@ -22,14 +22,7 @@ if (!isset($meta)) {
     </script>
     <meta name="color-scheme" content="light dark">
     <?php if (GA_MEASUREMENT_ID !== ''): ?>
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=<?= htmlspecialchars(GA_MEASUREMENT_ID) ?>"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', '<?= htmlspecialchars(GA_MEASUREMENT_ID) ?>');
-    </script>
+    <script>window.UTW_GA_ID = <?= json_encode(GA_MEASUREMENT_ID, JSON_UNESCAPED_UNICODE) ?>;</script>
     <?php endif; ?>
     <title><?= htmlspecialchars($meta['title']) ?></title>
     <meta name="description" content="<?= htmlspecialchars($meta['description']) ?>">

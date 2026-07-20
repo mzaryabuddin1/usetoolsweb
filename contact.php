@@ -58,4 +58,8 @@ require_once __DIR__ . '/includes/header.php';
     <?php endif; ?>
 </div>
 
+<div class="container">
+    <?php ad_slot(); ?>
+</div>
+
 <?php require_once __DIR__ . '/includes/footer.php'; ?>

@@ -30,6 +30,8 @@ require_once __DIR__ . '/includes/header.php';
         <div class="pdf-server-status alert alert-info hidden"></div>
         <div class="pdf-server-error alert alert-error hidden"></div>
     </div>
+
+    <?php ad_slot(); ?>
 </div>
 
 <?php

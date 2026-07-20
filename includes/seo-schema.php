@@ -10,6 +10,9 @@ if (!isset($meta)) {
 
 $baseUrl = rtrim(SITE_URL, '/');
 $path    = trim(parse_url($meta['canonical'] ?? '/', PHP_URL_PATH) ?? '/', '/');
+if (str_ends_with($path, '.php')) {
+    $path = substr($path, 0, -4);
+}
 
 $websiteSchema = [
     '@context' => 'https://schema.org',
@@ -35,10 +38,13 @@ $orgSchema = [
 
 $schemas = [$websiteSchema, $orgSchema];
 
-if ($path !== '' && $path !== 'index.php') {
+if ($path !== '' && $path !== 'index') {
     $tool = function_exists('get_tool_by_slug') ? get_tool_by_slug($path) : null;
 
     if ($tool) {
+        global $TOOL_CATEGORIES;
+        $catLabel = $TOOL_CATEGORIES[$tool['category'] ?? 'utility'] ?? 'Tools';
+
         $schemas[] = [
             '@context'    => 'https://schema.org',
             '@type'       => 'WebApplication',
@@ -59,6 +65,59 @@ if ($path !== '' && $path !== 'index.php') {
                 'url'   => $baseUrl . '/',
             ],
         ];
+
+        $schemas[] = [
+            '@context' => 'https://schema.org',
+            '@type'    => 'BreadcrumbList',
+            'itemListElement' => [
+                [
+                    '@type'    => 'ListItem',
+                    'position' => 1,
+                    'name'     => 'Home',
+                    'item'     => $baseUrl . '/',
+                ],
+                [
+                    '@type'    => 'ListItem',
+                    'position' => 2,
+                    'name'     => $catLabel,
+                    'item'     => $baseUrl . '/#cat-' . ($tool['category'] ?? 'utility'),
+                ],
+                [
+                    '@type'    => 'ListItem',
+                    'position' => 3,
+                    'name'     => $tool['title'],
+                    'item'     => tool_url($tool['slug']),
+                ],
+            ],
+        ];
+
+        if (!function_exists('tool_guide_build')) {
+            require_once __DIR__ . '/tool-guide.php';
+        }
+        $guide = tool_guide_build($tool);
+        if (!empty($guide['faqs'])) {
+            $faqEntities = [];
+            foreach ($guide['faqs'] as $faq) {
+                if (empty($faq[0]) || empty($faq[1])) {
+                    continue;
+                }
+                $faqEntities[] = [
+                    '@type'          => 'Question',
+                    'name'           => $faq[0],
+                    'acceptedAnswer' => [
+                        '@type' => 'Answer',
+                        'text'  => $faq[1],
+                    ],
+                ];
+            }
+            if ($faqEntities) {
+                $schemas[] = [
+                    '@context'   => 'https://schema.org',
+                    '@type'      => 'FAQPage',
+                    'mainEntity' => $faqEntities,
+                ];
+            }
+        }
     } else {
         $schemas[] = [
             '@context'    => 'https://schema.org',

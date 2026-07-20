@@ -28,6 +28,8 @@ require_once __DIR__ . '/includes/header.php';
         <div id="pdf-redact-status" class="alert alert-info hidden"></div>
         <div id="pdf-redact-error" class="alert alert-error hidden"></div>
     </div>
+
+    <?php ad_slot(); ?>
 </div>
 
 <?php $extra_scripts = pdf_tool_script('pdf-redact'); require_once __DIR__ . '/includes/footer.php'; ?>

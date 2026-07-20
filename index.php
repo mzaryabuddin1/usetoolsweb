@@ -49,16 +49,6 @@ require_once __DIR__ . '/includes/header.php';
     </div>
 </section>
 
-<section class="home-intro container">
-    <h2 class="section-title">What is <?= htmlspecialchars(SITE_NAME) ?>?</h2>
-    <p>
-        <?= htmlspecialchars(SITE_NAME) ?> is a free collection of <strong><?= count($TOOLS) ?> online tools</strong> for developers, designers, students, and everyday tasks —
-        image editing, PDF processing, JSON formatting, calculators, QR codes, SEO helpers, and more.
-        Most tools run in your browser for privacy; server-based tools delete your files after processing.
-    </p>
-    <p class="hint">Use the search bar above, browse by category below, or jump to a section with the category toolbar.</p>
-</section>
-
 <?php if (!empty($trendingTools)): ?>
 <section id="trending-tools-section" class="trending-tools container">
     <div class="trending-tools-head">
@@ -150,6 +140,60 @@ require_once __DIR__ . '/includes/header.php';
 <div class="container">
     <?php ad_slot(); ?>
 </div>
+
+<section class="home-info container" id="about-site">
+    <section class="home-intro">
+        <h2 class="section-title">What is <?= htmlspecialchars(SITE_NAME) ?>?</h2>
+        <p>
+            <?= htmlspecialchars(SITE_NAME) ?> is a free collection of <strong><?= count($TOOLS) ?> online tools</strong> for developers, designers, students, and everyday tasks —
+            image editing, PDF processing, JSON formatting, calculators, QR codes, SEO helpers, and more.
+            Most tools run in your browser for privacy; server-based tools delete your files after processing.
+        </p>
+    </section>
+
+    <section class="home-features">
+        <h2 class="section-title">Why use <?= htmlspecialchars(SITE_NAME) ?>?</h2>
+        <div class="home-features-grid">
+            <article class="home-feature-card">
+                <h3>Private by default</h3>
+                <p>Most tools run in your browser — files and text stay on your device. Server tools delete uploads right after you download the result.</p>
+            </article>
+            <article class="home-feature-card">
+                <h3>No sign-up</h3>
+                <p>Open any tool and start working. No account, no credit card, no trial limits on basic features.</p>
+            </article>
+            <article class="home-feature-card">
+                <h3>Built for real tasks</h3>
+                <p>PDF editing, image compression, JSON formatting, QR codes, SEO audits, calculators, and dozens more — each page does one job well.</p>
+            </article>
+        </div>
+    </section>
+
+    <section class="home-popular">
+        <h2 class="section-title">Popular tools</h2>
+        <p class="hint">Frequently used utilities on <?= htmlspecialchars(SITE_DOMAIN) ?> — bookmark the ones you need most.</p>
+        <ul class="home-popular-list">
+            <li><a href="<?= htmlspecialchars(tool_url('air-share')) ?>">Air Share</a> — shared clipboard and file board for teams</li>
+            <li><a href="<?= htmlspecialchars(tool_url('qr-code-generator')) ?>">QR Code Generator</a> — custom colors, logo, and gradient QR codes</li>
+            <li><a href="<?= htmlspecialchars(tool_url('background-remover')) ?>">Background Remover</a> — AI background removal for photos</li>
+            <li><a href="<?= htmlspecialchars(tool_url('compress-image')) ?>">Image Compressor</a> — reduce JPG and PNG size in the browser</li>
+            <li><a href="<?= htmlspecialchars(tool_url('pdf-merge')) ?>">Merge PDF</a> — combine multiple PDFs into one file</li>
+            <li><a href="<?= htmlspecialchars(tool_url('json-formatter')) ?>">JSON Formatter</a> — validate and beautify JSON</li>
+            <li><a href="<?= htmlspecialchars(tool_url('curl-runner')) ?>">cURL Runner</a> — test API requests from your browser</li>
+            <li><a href="<?= htmlspecialchars(tool_url('word-counter')) ?>">Word Counter</a> — count words, characters, and reading time</li>
+        </ul>
+    </section>
+
+    <section class="home-trust">
+        <h2 class="section-title">Transparent &amp; trustworthy</h2>
+        <p>
+            We publish clear <a href="<?= htmlspecialchars(tool_url('privacy')) ?>">Privacy</a> and
+            <a href="<?= htmlspecialchars(tool_url('terms')) ?>">Terms</a> pages, explain when a tool uploads data to our server,
+            and provide how-to guides on every tool page. Questions or feedback?
+            <a href="<?= htmlspecialchars(tool_url('contact')) ?>">Contact us</a> anytime.
+        </p>
+    </section>
+</section>
 
 <?php
 $extra_scripts = '<script src="/assets/js/tools/home-search.js"></script>';

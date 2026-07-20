@@ -42,4 +42,8 @@ require_once __DIR__ . '/includes/header.php';
     <p>Questions about these terms? Contact us at <a href="mailto:<?= htmlspecialchars(SITE_EMAIL) ?>"><?= htmlspecialchars(SITE_EMAIL) ?></a> or via our <a href="<?= htmlspecialchars(tool_url('contact')) ?>">contact page</a>.</p>
 </div>
 
+<div class="container">
+    <?php ad_slot(); ?>
+</div>
+
 <?php require_once __DIR__ . '/includes/footer.php'; ?>

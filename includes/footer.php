@@ -28,7 +28,10 @@
     <div id="cookie-consent" class="cookie-consent hidden" role="dialog" aria-label="Cookie notice">
         <div class="cookie-consent-inner container">
             <p>We use cookies for analytics and, when enabled, advertising (Google AdSense). See our <a href="<?= htmlspecialchars(tool_url('privacy')) ?>">Privacy Policy</a> and <a href="<?= htmlspecialchars(tool_url('terms')) ?>">Terms</a>.</p>
-            <button type="button" class="btn btn-primary btn-sm" id="cookie-accept">Accept</button>
+            <div class="cookie-consent-actions">
+                <button type="button" class="btn btn-secondary btn-sm" id="cookie-reject">Reject non-essential</button>
+                <button type="button" class="btn btn-primary btn-sm" id="cookie-accept">Accept</button>
+            </div>
         </div>
     </div>
 

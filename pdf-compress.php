@@ -33,6 +33,8 @@ require_once __DIR__ . '/includes/header.php';
         <div id="pdf-compress-status" class="alert alert-info hidden"></div>
         <div id="pdf-compress-error" class="alert alert-error hidden"></div>
     </div>
+
+    <?php ad_slot(); ?>
 </div>
 
 <?php $extra_scripts = pdf_tool_script('pdf-compress'); require_once __DIR__ . '/includes/footer.php'; ?>

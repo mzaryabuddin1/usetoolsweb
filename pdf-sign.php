@@ -35,6 +35,8 @@ require_once __DIR__ . '/includes/header.php';
         <div id="pdf-sign-status" class="alert alert-info hidden"></div>
         <div id="pdf-sign-error" class="alert alert-error hidden"></div>
     </div>
+
+    <?php ad_slot(); ?>
 </div>
 
 <?php $extra_scripts = pdf_tool_script('pdf-sign'); require_once __DIR__ . '/includes/footer.php'; ?>

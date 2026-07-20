@@ -36,6 +36,8 @@ require_once __DIR__ . '/includes/header.php';
             </div>
         </div>
     </div>
+
+    <?php ad_slot(); ?>
 </div>
 
 <?php $extra_scripts = pdf_tool_script('pdf-compare'); require_once __DIR__ . '/includes/footer.php'; ?>

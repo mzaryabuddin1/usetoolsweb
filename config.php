@@ -331,11 +331,15 @@ function seo_keywords_for_slug(string $slug, string $title = ''): string
 
 function page_meta(string $title, string $description = '', string $keywords = ''): array
 {
-    $canonical = rtrim(SITE_URL, '/') . ($_SERVER['REQUEST_URI'] ?? '/');
-    $path      = trim(parse_url($canonical, PHP_URL_PATH) ?? '/', '/');
+    $path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?? '/';
+    $canonical = rtrim(SITE_URL, '/') . ($path === '' ? '/' : $path);
+    $slugPath  = trim($path, '/');
+    if (str_ends_with($slugPath, '.php')) {
+        $slugPath = substr($slugPath, 0, -4);
+    }
 
-    if ($keywords === '' && $path !== '') {
-        $keywords = seo_keywords_for_slug($path, $title);
+    if ($keywords === '' && $slugPath !== '') {
+        $keywords = seo_keywords_for_slug($slugPath, $title);
     } elseif ($keywords === '') {
         $keywords = SITE_KEYWORDS;
     }
@@ -345,7 +349,7 @@ function page_meta(string $title, string $description = '', string $keywords = '
         'description' => $description ?: SITE_DESCRIPTION,
         'keywords'    => $keywords,
         'canonical'   => $canonical,
-        'og_type'     => ($path === '' || $path === 'index.php') ? 'website' : 'website',
+        'og_type'     => ($slugPath === '' || $slugPath === 'index') ? 'website' : 'website',
         'og_image'    => rtrim(SITE_URL, '/') . SITE_OG_IMAGE,
     ];
 }

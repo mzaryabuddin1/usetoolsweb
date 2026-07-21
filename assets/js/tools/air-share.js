@@ -6,6 +6,7 @@
     var POLL_MS = cfg.pollMs || 3000;
 
     var desk = '';
+    var deskMode = 'network';
     var lastUpdated = 0;
     var dirty = false;
     var saving = false;
@@ -42,6 +43,20 @@
 
     function setSyncState(text) {
         $('#air-desk-sync').text(text || '');
+    }
+
+    function updateModeUi(data) {
+        deskMode = data.mode === 'private' ? 'private' : 'network';
+        var isNetwork = deskMode === 'network';
+
+        $('#air-network-banner').toggleClass('hidden', !isNetwork);
+        $('#air-private-link-wrap').toggleClass('hidden', isNetwork);
+        $('#btn-join-network').toggleClass('active', isNetwork);
+        $('#btn-new-desk').toggleClass('active', !isNetwork);
+
+        if (data.network_label) {
+            $('#air-network-label').text(data.network_label);
+        }
     }
 
     async function apiDesk(method, body, isForm) {
@@ -83,6 +98,7 @@
     function applyDeskData(data, fromRemote) {
         desk = data.desk;
         setDeskUrl(desk);
+        updateModeUi(data);
         lastUpdated = data.updated_at || 0;
 
         if (fromRemote && dirty) {
@@ -91,9 +107,15 @@
             $('#air-desk-text').val(data.text || '');
             dirty = false;
             var when = data.updated_at ? new Date(data.updated_at * 1000) : null;
-            setSyncState(when
-                ? 'Last saved ' + when.toLocaleString() + ' · expires in ' + data.expires_in_days + ' days'
-                : 'Board ready — share the link above');
+            if (deskMode === 'network') {
+                setSyncState(when
+                    ? 'Network board · last saved ' + when.toLocaleString() + ' · auto-sync every few seconds'
+                    : 'Network board ready — others on your Wi‑Fi will see this when they open Air Share');
+            } else {
+                setSyncState(when
+                    ? 'Private board · last saved ' + when.toLocaleString() + ' · expires in ' + data.expires_in_days + ' days'
+                    : 'Private board — copy the link above to share outside your network');
+            }
         }
 
         renderFiles(data.files || []);
@@ -106,9 +128,17 @@
         applyDeskData(data, false);
     }
 
+    async function joinNetworkDesk() {
+        hideError();
+        setSyncState('Joining network board…');
+        var data = await apiDesk('POST', { action: 'join-network' });
+        applyDeskData(data, false);
+        setSaveState('');
+    }
+
     async function createDesk() {
         hideError();
-        setSyncState('Creating board…');
+        setSyncState('Creating private board…');
         var data = await apiDesk('POST', { action: 'create' });
         applyDeskData(data, false);
         setSaveState('');
@@ -165,6 +195,10 @@
             var data = await apiDesk('GET');
             if ((data.updated_at || 0) > lastUpdated) {
                 applyDeskData(data, true);
+            } else if ((data.updated_at || 0) !== lastUpdated && !dirty) {
+                $('#air-desk-text').val(data.text || '');
+                renderFiles(data.files || []);
+                lastUpdated = data.updated_at || 0;
             }
         } catch (e) {
             /* board expired */
@@ -199,10 +233,10 @@
                 startPolling();
                 return;
             } catch (e) {
-                /* create new if expired */
+                /* fall through to network board */
             }
         }
-        await createDesk();
+        await joinNetworkDesk();
         startPolling();
     }
 
@@ -226,13 +260,20 @@
             var url = $('#air-desk-url').val();
             if (url) {
                 navigator.clipboard.writeText(url).then(function () {
-                    setSyncState('Link copied — send it to your colleague.');
+                    setSyncState('Link copied — send it to someone outside your network.');
                 });
             }
         });
 
+        $('#btn-join-network').on('click', function () {
+            if (dirty && !window.confirm('You have unsaved text. Switch to the network board anyway?')) {
+                return;
+            }
+            joinNetworkDesk();
+        });
+
         $('#btn-new-desk').on('click', function () {
-            if (dirty && !window.confirm('You have unsaved text. Create a new board anyway?')) {
+            if (dirty && !window.confirm('You have unsaved text. Create a private board anyway?')) {
                 return;
             }
             createDesk();

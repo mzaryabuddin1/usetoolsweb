@@ -42,6 +42,10 @@ if ($action === 'create') {
     air_share_json_ok(air_share_desk_create());
 }
 
+if ($action === 'join-network') {
+    air_share_json_ok(air_share_desk_join_network());
+}
+
 if ($action === 'save') {
     $desk = strtolower(trim((string) ($input['desk'] ?? '')));
     $text = (string) ($input['text'] ?? '');

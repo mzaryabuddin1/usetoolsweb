@@ -475,7 +475,61 @@ function air_share_desks_dir(): string
 
 function air_share_valid_desk(string $desk): bool
 {
-    return (bool) preg_match('/^[a-z0-9]{8}$/', $desk);
+    return (bool) preg_match('/^[a-f0-9]{8}$/', $desk);
+}
+
+function air_share_client_ip(): string
+{
+    $ip = (string) ($_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'] ?? '');
+    if (str_contains($ip, ',')) {
+        $ip = trim(explode(',', $ip)[0]);
+    }
+    return trim($ip);
+}
+
+function air_share_is_private_ip(string $ip): bool
+{
+    if ($ip === '' || !filter_var($ip, FILTER_VALIDATE_IP)) {
+        return false;
+    }
+    return filter_var(
+        $ip,
+        FILTER_VALIDATE_IP,
+        FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE
+    ) === false;
+}
+
+/**
+ * Stable key for "same network" grouping — LAN subnet or shared public IP (typical Wi‑Fi).
+ */
+function air_share_network_key(): string
+{
+    $ip = air_share_client_ip();
+
+    if ($ip === '' || $ip === '127.0.0.1' || $ip === '::1') {
+        $host = strtolower((string) ($_SERVER['HTTP_HOST'] ?? 'local'));
+        return 'local:' . preg_replace('/[^a-z0-9.:_-]/', '', $host);
+    }
+
+    if (air_share_is_private_ip($ip)) {
+        if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
+            $parts = explode('.', $ip);
+            return 'lan:' . $parts[0] . '.' . $parts[1] . '.' . $parts[2];
+        }
+        return 'lan6:' . $ip;
+    }
+
+    return 'wan:' . $ip;
+}
+
+function air_share_network_desk_id(): string
+{
+    return substr(hash('sha256', air_share_network_key()), 0, 8);
+}
+
+function air_share_is_network_desk(string $desk): bool
+{
+    return air_share_valid_desk($desk) && hash_equals(air_share_network_desk_id(), strtolower($desk));
 }
 
 function air_share_desk_url(string $desk): string
@@ -536,6 +590,29 @@ function air_share_desk_create(): array
     air_share_json_error(503, 'Could not create a share board. Try again.');
 }
 
+function air_share_desk_join_network(): array
+{
+    air_share_cleanup_expired();
+    $desk = air_share_network_desk_id();
+    $existing = air_share_desk_load($desk);
+    if ($existing) {
+        return air_share_desk_payload($existing);
+    }
+
+    $now = time();
+    $data = [
+        'desk'       => $desk,
+        'text'       => '',
+        'files'      => [],
+        'created_at' => $now,
+        'updated_at' => $now,
+        'expires_at' => $now + air_share_retention_seconds(),
+        'network'    => true,
+    ];
+    air_share_desk_save($desk, $data);
+    return air_share_desk_payload($data);
+}
+
 function air_share_desk_payload(array $data): array
 {
     $files = [];
@@ -551,15 +628,31 @@ function air_share_desk_payload(array $data): array
         ];
     }
 
+    $desk = (string) ($data['desk'] ?? '');
+
     return [
-        'desk'            => $data['desk'],
-        'url'             => air_share_desk_url($data['desk']),
+        'desk'            => $desk,
+        'url'             => air_share_desk_url($desk),
         'text'            => (string) ($data['text'] ?? ''),
         'files'           => $files,
         'updated_at'      => (int) ($data['updated_at'] ?? 0),
         'expires_at'      => gmdate('c', (int) ($data['expires_at'] ?? 0)),
         'expires_in_days' => (int) (air_share_retention_seconds() / 86400),
+        'mode'            => air_share_is_network_desk($desk) ? 'network' : 'private',
+        'network_label'   => air_share_network_mode_label(),
     ];
+}
+
+function air_share_network_mode_label(): string
+{
+    $ip = air_share_client_ip();
+    if (air_share_is_private_ip($ip)) {
+        return 'Same Wi‑Fi / local network';
+    }
+    if ($ip === '127.0.0.1' || $ip === '::1' || $ip === '') {
+        return 'This device';
+    }
+    return 'Same internet connection';
 }
 
 function air_share_desk_get(string $desk): void

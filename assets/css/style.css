@@ -3155,6 +3155,23 @@ select:focus {
 }
 
 /* Air Share — shared desk */
+.air-network-banner {
+    margin-bottom: 1rem;
+    padding: 1rem 1.25rem;
+    background: color-mix(in srgb, var(--color-primary) 12%, var(--color-surface));
+    border: 1px solid var(--color-primary);
+    border-radius: 12px;
+}
+
+.air-network-banner strong {
+    display: block;
+    margin-bottom: 0.15rem;
+}
+
+.air-network-banner .hint {
+    margin: 0.5rem 0 0;
+}
+
 .air-desk-bar {
     margin-bottom: 1.5rem;
     padding: 1rem 1.25rem;
@@ -3168,6 +3185,23 @@ select:focus {
     font-weight: 600;
     font-size: 0.85rem;
     margin-bottom: 0.35rem;
+}
+
+.air-desk-bar-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+}
+
+.air-desk-bar-actions .btn.active {
+    border-color: var(--color-primary);
+    background: var(--color-primary-light);
+    color: var(--color-primary);
+}
+
+#air-private-link-wrap {
+    margin-bottom: 0.25rem;
 }
 
 .air-desk-sync,

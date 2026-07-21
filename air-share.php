@@ -16,16 +16,27 @@ require_once __DIR__ . '/includes/header.php';
 <div class="container tool-page">
     <div class="tool-page-header">
         <h1>Air Share</h1>
-        <p>Your shared clipboard — open the link, type, hit <strong>Save</strong>, and anyone with the same link sees it. Works in the office or across the internet. Auto-deleted after <?= (int) $retentionDays ?> days.</p>
+        <p>Shared clipboard for your network — open Air Share on the same Wi‑Fi and everyone sees the same board automatically. No link to copy for nearby colleagues. Auto-deleted after <?= (int) $retentionDays ?> days.</p>
     </div>
 
     <div class="tool-panel air-share-panel">
+        <div id="air-network-banner" class="air-network-banner hidden" role="status">
+            <strong>Network board active</strong>
+            <span id="air-network-label">Same Wi‑Fi / local network</span>
+            <p class="hint">Anyone on the same network who opens Air Share will see this board. Use <strong>Save</strong> after typing so others can read your updates.</p>
+        </div>
+
         <div class="air-desk-bar">
-            <label for="air-desk-url">Share this link with your colleague</label>
-            <div class="air-share-url-row">
-                <input type="text" id="air-desk-url" readonly>
-                <button type="button" class="btn btn-primary btn-sm" id="btn-copy-desk-url">Copy link</button>
-                <button type="button" class="btn btn-secondary btn-sm" id="btn-new-desk">New board</button>
+            <div id="air-private-link-wrap" class="hidden">
+                <label for="air-desk-url">Share this private link (people outside your network)</label>
+                <div class="air-share-url-row">
+                    <input type="text" id="air-desk-url" readonly>
+                    <button type="button" class="btn btn-primary btn-sm" id="btn-copy-desk-url">Copy link</button>
+                </div>
+            </div>
+            <div class="air-desk-bar-actions">
+                <button type="button" class="btn btn-secondary btn-sm" id="btn-join-network">Network board</button>
+                <button type="button" class="btn btn-secondary btn-sm" id="btn-new-desk">Private board</button>
             </div>
             <p id="air-desk-sync" class="hint air-desk-sync">Loading…</p>
         </div>

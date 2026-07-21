@@ -15,10 +15,6 @@ require_once dirname(__DIR__) . '/includes/air-share-helper.php';
 header('X-Content-Type-Options: nosniff');
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-    if (($_GET['mode'] ?? '') === 'lan') {
-        air_share_json_ok(air_share_desk_join_lan());
-    }
-
     $desk = strtolower(trim((string) ($_GET['desk'] ?? '')));
     if ($desk === '') {
         air_share_json_error(400, 'Missing desk id.');
@@ -44,10 +40,6 @@ $action = $input['action'] ?? '';
 
 if ($action === 'create') {
     air_share_json_ok(air_share_desk_create());
-}
-
-if ($action === 'join-lan') {
-    air_share_json_ok(air_share_desk_join_lan());
 }
 
 if ($action === 'save') {

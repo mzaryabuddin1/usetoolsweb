@@ -19,24 +19,24 @@ function tool_guide_custom_guides(): array
     return [
         'air-share' => [
             'what' => [
-                '<strong>Air Share</strong> has two modes: <strong>Same network</strong> for centralized sharing on your Wi‑Fi (no link needed), and <strong>Share link</strong> for colleagues outside your network.',
-                'On the same network, everyone opens Air Share and sees one shared board — text and files sync automatically. For remote sharing, switch to Share link and copy the URL.',
+                '<strong>Air Share</strong> is a free online shared clipboard and file board. Open one link, type text or upload files, hit <strong>Save</strong>, and anyone with the same link sees your updates — in the office or across the internet. No accounts or apps required.',
+                'Each board gets a unique URL like <code>' . htmlspecialchars($site . '/air-share?d=397f68cb') . '</code>. Content is stored temporarily and <strong>automatically deleted after ' . $airRetention . ' days</strong>.',
             ],
             'why' => [
-                'Same Wi‑Fi sharing — open the tool, no link to copy.',
-                'Share link mode for teammates anywhere on the internet.',
+                'Share with colleagues instantly — one link in chat or email.',
                 'No sign-up required — start sharing in seconds.',
                 'Text and files in one place — notes, PDFs, images, ZIPs.',
-                'Auto-sync — updates appear within a few seconds.',
+                'Works anywhere — same Wi‑Fi not required.',
+                'Auto-sync — teammates see updates within a few seconds.',
                 'Temporary by design — boards expire after ' . $airRetention . ' days.',
             ],
-            'how' => 'Default <strong>Same network</strong> mode joins a board shared by everyone on your Wi‑Fi (or everyone using the same local server address). Switch to <strong>Share link</strong> to create a private URL for people outside your network.',
+            'how' => 'Air Share uses a <strong>shared board ID</strong> in the URL (<code>?d=</code> plus an 8-character code). Saving text or uploading files updates the board on the server. The page polls every few seconds so others see changes automatically.',
             'how_steps' => [
-                'Open Air Share — you join the network board automatically.',
-                'Type in <strong>Text</strong> or upload files, then click <strong>Save</strong> for text.',
-                'Others on your Wi‑Fi open Air Share and see the same content.',
-                'Need remote access? Switch to <strong>Share link</strong> and copy the URL.',
-                'After ' . $airRetention . ' days, boards are removed.',
+                'Open Air Share and copy your board link (or open a link someone sent you).',
+                'Type in the <strong>Text</strong> area or upload files under <strong>Files</strong>.',
+                'Click <strong>Save</strong> for text; wait for uploads to finish for files.',
+                'Teammates open the same link and see your content.',
+                'After ' . $airRetention . ' days, the board and files are removed.',
             ],
             'steps' => [
                 ['title' => 'Start a new board', 'items' => [

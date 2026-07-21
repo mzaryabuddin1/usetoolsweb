@@ -3155,6 +3155,45 @@ select:focus {
 }
 
 /* Air Share — shared desk */
+.air-mode-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.air-mode-btn {
+    flex: 1;
+    min-width: 140px;
+    padding: 0.65rem 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+}
+
+.air-mode-btn:hover {
+    border-color: var(--color-primary);
+}
+
+.air-mode-btn.active {
+    background: var(--color-primary-light);
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+}
+
+.air-desk-lan-title {
+    margin: 0 0 0.35rem;
+}
+
+.air-desk-bar-lan .air-desk-lan-title + .hint {
+    margin-top: 0;
+}
+
 .air-desk-bar {
     margin-bottom: 1.5rem;
     padding: 1rem 1.25rem;

@@ -6,6 +6,7 @@
     var POLL_MS = cfg.pollMs || 3000;
 
     var desk = '';
+    var shareMode = 'lan';
     var lastUpdated = 0;
     var dirty = false;
     var saving = false;
@@ -30,10 +31,26 @@
         return d ? d.toLowerCase().replace(/[^a-z0-9]/g, '') : '';
     }
 
+    function modeFromUrl() {
+        var params = new URLSearchParams(window.location.search);
+        if (params.get('d')) {
+            return 'link';
+        }
+        var mode = params.get('mode');
+        return mode === 'link' ? 'link' : 'lan';
+    }
+
+    function updateUrlState() {
+        if (shareMode === 'link' && desk) {
+            history.replaceState(null, '', '?mode=link&d=' + desk);
+        } else {
+            history.replaceState(null, '', window.location.pathname + '?mode=lan');
+        }
+    }
+
     function setDeskUrl(id) {
-        var url = window.location.origin + window.location.pathname + '?d=' + id;
+        var url = window.location.origin + window.location.pathname + '?mode=link&d=' + id;
         $('#air-desk-url').val(url);
-        history.replaceState(null, '', '?d=' + id);
     }
 
     function setSaveState(text) {
@@ -41,10 +58,26 @@
     }
 
     function setSyncState(text) {
-        $('#air-desk-sync').text(text || '');
+        if (shareMode === 'lan') {
+            $('#air-desk-sync').text(text || '');
+        } else {
+            $('#air-desk-link-sync').text(text || '');
+        }
     }
 
-    async function apiDesk(method, body, isForm) {
+    function setLanHint(text) {
+        $('#air-desk-lan-hint').text(text || '');
+    }
+
+    function setMode(mode) {
+        shareMode = mode === 'link' ? 'link' : 'lan';
+        $('.air-mode-btn').removeClass('active').attr('aria-selected', 'false');
+        $('.air-mode-btn[data-mode="' + shareMode + '"]').addClass('active').attr('aria-selected', 'true');
+        $('#air-desk-bar-lan').toggleClass('hidden', shareMode !== 'lan');
+        $('#air-desk-bar-link').toggleClass('hidden', shareMode !== 'link');
+    }
+
+    async function apiDesk(method, body, isForm, query) {
         var opts = { method: method };
         if (isForm) {
             opts.body = body;
@@ -53,7 +86,9 @@
             opts.body = JSON.stringify(body);
         }
         var url = '/api/air-share-desk.php';
-        if (method === 'GET') {
+        if (query) {
+            url += '?' + query;
+        } else if (method === 'GET') {
             url += '?desk=' + encodeURIComponent(desk);
         }
         var res = await fetch(url, opts);
@@ -82,8 +117,21 @@
 
     function applyDeskData(data, fromRemote) {
         desk = data.desk;
-        setDeskUrl(desk);
         lastUpdated = data.updated_at || 0;
+
+        if (data.board_type === 'lan') {
+            shareMode = 'lan';
+            setMode('lan');
+            if (data.scope_hint) {
+                setLanHint(data.scope_hint);
+            }
+        } else {
+            shareMode = 'link';
+            setMode('link');
+            setDeskUrl(desk);
+        }
+
+        updateUrlState();
 
         if (fromRemote && dirty) {
             setSyncState('Someone else updated this board. Reload text or save yours to overwrite.');
@@ -91,9 +139,15 @@
             $('#air-desk-text').val(data.text || '');
             dirty = false;
             var when = data.updated_at ? new Date(data.updated_at * 1000) : null;
-            setSyncState(when
-                ? 'Last saved ' + when.toLocaleString() + ' · expires in ' + data.expires_in_days + ' days'
-                : 'Board ready — share the link above');
+            if (shareMode === 'lan') {
+                setSyncState(when
+                    ? 'Network board · last saved ' + when.toLocaleString()
+                    : 'Network board ready — others on your Wi‑Fi can open Air Share');
+            } else {
+                setSyncState(when
+                    ? 'Last saved ' + when.toLocaleString() + ' · expires in ' + data.expires_in_days + ' days'
+                    : 'Link board ready — copy the URL above');
+            }
         }
 
         renderFiles(data.files || []);
@@ -106,9 +160,17 @@
         applyDeskData(data, false);
     }
 
+    async function joinLanDesk() {
+        hideError();
+        setSyncState('Joining network board…');
+        var data = await apiDesk('GET', null, false, 'mode=lan');
+        applyDeskData(data, false);
+        setSaveState('');
+    }
+
     async function createDesk() {
         hideError();
-        setSyncState('Creating board…');
+        setSyncState('Creating link board…');
         var data = await apiDesk('POST', { action: 'create' });
         applyDeskData(data, false);
         setSaveState('');
@@ -162,7 +224,12 @@
     async function pollDesk() {
         if (!desk || dirty || saving) return;
         try {
-            var data = await apiDesk('GET');
+            var data;
+            if (shareMode === 'lan') {
+                data = await apiDesk('GET', null, false, 'mode=lan');
+            } else {
+                data = await apiDesk('GET');
+            }
             if ((data.updated_at || 0) > lastUpdated) {
                 applyDeskData(data, true);
             }
@@ -191,18 +258,58 @@
         return String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;');
     }
 
-    async function init() {
-        var existing = deskFromUrl();
-        if (existing.length === 8) {
-            try {
-                await loadDesk(existing);
-                startPolling();
-                return;
-            } catch (e) {
-                /* create new if expired */
+    async function switchMode(mode) {
+        if (mode === shareMode) {
+            return;
+        }
+        if (dirty && !window.confirm('You have unsaved text. Switch mode anyway?')) {
+            return;
+        }
+
+        dirty = false;
+        setSaveState('');
+        hideError();
+        setMode(mode);
+
+        if (mode === 'lan') {
+            await joinLanDesk();
+        } else {
+            var existing = deskFromUrl();
+            if (existing.length === 8) {
+                try {
+                    await loadDesk(existing);
+                } catch (e) {
+                    await createDesk();
+                }
+            } else {
+                await createDesk();
             }
         }
-        await createDesk();
+
+        startPolling();
+    }
+
+    async function init() {
+        shareMode = modeFromUrl();
+        setMode(shareMode);
+
+        if (shareMode === 'link') {
+            var existing = deskFromUrl();
+            if (existing.length === 8) {
+                try {
+                    await loadDesk(existing);
+                    startPolling();
+                    return;
+                } catch (e) {
+                    /* fall through */
+                }
+            }
+            await createDesk();
+            startPolling();
+            return;
+        }
+
+        await joinLanDesk();
         startPolling();
     }
 
@@ -222,17 +329,21 @@
             setSaveState('Unsaved changes');
         });
 
+        $('.air-mode-btn').on('click', function () {
+            switchMode($(this).data('mode'));
+        });
+
         $('#btn-copy-desk-url').on('click', function () {
             var url = $('#air-desk-url').val();
             if (url) {
                 navigator.clipboard.writeText(url).then(function () {
-                    setSyncState('Link copied — send it to your colleague.');
+                    setSyncState('Link copied — send it to anyone outside your network.');
                 });
             }
         });
 
         $('#btn-new-desk').on('click', function () {
-            if (dirty && !window.confirm('You have unsaved text. Create a new board anyway?')) {
+            if (dirty && !window.confirm('You have unsaved text. Create a new link board anyway?')) {
                 return;
             }
             createDesk();

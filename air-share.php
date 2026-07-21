@@ -7,7 +7,7 @@ $maxTextKb = (int) (AIR_SHARE_TEXT_MAX_BYTES / 1024);
 
 $meta = page_meta(
     'Air Share',
-    'Share text and files with your team — open the same link, type, save, and everyone sees it. Works on your network or anywhere.'
+    'Shared clipboard for your team — same Wi‑Fi board with no link, or create a URL to share outside your network.'
 );
 
 require_once __DIR__ . '/includes/header.php';
@@ -16,18 +16,33 @@ require_once __DIR__ . '/includes/header.php';
 <div class="container tool-page">
     <div class="tool-page-header">
         <h1>Air Share</h1>
-        <p>Your shared clipboard — open the link, type, hit <strong>Save</strong>, and anyone with the same link sees it. Works in the office or across the internet. Auto-deleted after <?= (int) $retentionDays ?> days.</p>
+        <p>Share text and files with your team on the <strong>same Wi‑Fi</strong> — just open Air Share, no link required. Need someone outside your network? Switch to <strong>Share link</strong> and send them a URL.</p>
     </div>
 
     <div class="tool-panel air-share-panel">
-        <div class="air-desk-bar">
-            <label for="air-desk-url">Share this link with your colleague</label>
+        <div class="air-mode-bar" role="tablist" aria-label="Sharing mode">
+            <button type="button" class="air-mode-btn active" data-mode="lan" role="tab" aria-selected="true" id="air-mode-lan">
+                Same network
+            </button>
+            <button type="button" class="air-mode-btn" data-mode="link" role="tab" aria-selected="false" id="air-mode-link">
+                Share link
+            </button>
+        </div>
+
+        <div class="air-desk-bar air-desk-bar-lan" id="air-desk-bar-lan">
+            <p class="air-desk-lan-title"><strong>Network board</strong> — centralized sharing for your Wi‑Fi</p>
+            <p id="air-desk-lan-hint" class="hint">Open Air Share on any device on your network — everyone sees the same text and files. No link to copy.</p>
+            <p id="air-desk-sync" class="hint air-desk-sync">Loading…</p>
+        </div>
+
+        <div class="air-desk-bar air-desk-bar-link hidden" id="air-desk-bar-link">
+            <label for="air-desk-url">Share this link outside your network</label>
             <div class="air-share-url-row">
                 <input type="text" id="air-desk-url" readonly>
                 <button type="button" class="btn btn-primary btn-sm" id="btn-copy-desk-url">Copy link</button>
-                <button type="button" class="btn btn-secondary btn-sm" id="btn-new-desk">New board</button>
+                <button type="button" class="btn btn-secondary btn-sm" id="btn-new-desk">New link board</button>
             </div>
-            <p id="air-desk-sync" class="hint air-desk-sync">Loading…</p>
+            <p id="air-desk-link-sync" class="hint air-desk-sync"></p>
         </div>
 
         <div class="air-desk-section">

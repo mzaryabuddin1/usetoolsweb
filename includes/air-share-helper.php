@@ -525,6 +525,7 @@ function air_share_desk_create(): array
             'desk'       => $desk,
             'text'       => '',
             'files'      => [],
+            'board_type' => 'remote',
             'created_at' => $now,
             'updated_at' => $now,
             'expires_at' => $expires,
@@ -534,6 +535,103 @@ function air_share_desk_create(): array
     }
 
     air_share_json_error(503, 'Could not create a share board. Try again.');
+}
+
+function air_share_client_ip(): string
+{
+    $candidates = [
+        $_SERVER['HTTP_CF_CONNECTING_IP'] ?? '',
+        $_SERVER['HTTP_X_FORWARDED_FOR'] ?? '',
+        $_SERVER['REMOTE_ADDR'] ?? '',
+    ];
+
+    foreach ($candidates as $raw) {
+        if ($raw === '') {
+            continue;
+        }
+        $ip = trim(explode(',', (string) $raw)[0]);
+        if (filter_var($ip, FILTER_VALIDATE_IP)) {
+            return $ip;
+        }
+    }
+
+    return '0.0.0.0';
+}
+
+function air_share_is_private_ip(string $ip): bool
+{
+    if (!filter_var($ip, FILTER_VALIDATE_IP)) {
+        return false;
+    }
+
+    return !filter_var(
+        $ip,
+        FILTER_VALIDATE_IP,
+        FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE
+    );
+}
+
+function air_share_lan_scope_key(): string
+{
+    $host = (string) ($_SERVER['HTTP_HOST'] ?? '');
+    $host = preg_replace('/:\d+$/', '', $host) ?? $host;
+    $host = strtolower(trim($host));
+
+    if ($host === 'localhost' || $host === '127.0.0.1' || air_share_is_private_ip($host)) {
+        return 'host:' . $host;
+    }
+
+    return 'ip:' . air_share_client_ip();
+}
+
+function air_share_lan_desk_id(string $scopeKey): string
+{
+    return substr(hash('sha256', 'air-lan:' . $scopeKey), 0, 8);
+}
+
+function air_share_lan_scope_hint(string $scopeKey): string
+{
+    if (str_starts_with($scopeKey, 'host:')) {
+        $host = substr($scopeKey, 5);
+        if ($host === 'localhost' || $host === '127.0.0.1') {
+            return 'This browser only — open Air Share using your computer\'s LAN address (e.g. http://192.168.x.x/air-share) so other devices on Wi‑Fi join the same board.';
+        }
+
+        return 'Shared with everyone who opens Air Share at http://' . $host . '/air-share on your network.';
+    }
+
+    return 'Shared with everyone on your Wi‑Fi — they can open Air Share without a link.';
+}
+
+function air_share_desk_join_lan(): array
+{
+    air_share_cleanup_expired();
+
+    $scopeKey = air_share_lan_scope_key();
+    $desk     = air_share_lan_desk_id($scopeKey);
+    $data     = air_share_desk_load($desk);
+
+    if (!$data) {
+        $now     = time();
+        $expires = $now + air_share_retention_seconds();
+        $data    = [
+            'desk'       => $desk,
+            'text'       => '',
+            'files'      => [],
+            'board_type' => 'lan',
+            'scope'      => $scopeKey,
+            'created_at' => $now,
+            'updated_at' => $now,
+            'expires_at' => $expires,
+        ];
+        air_share_desk_save($desk, $data);
+    }
+
+    $payload = air_share_desk_payload($data);
+    $payload['board_type'] = 'lan';
+    $payload['scope_hint'] = air_share_lan_scope_hint($scopeKey);
+
+    return $payload;
 }
 
 function air_share_desk_payload(array $data): array
@@ -556,6 +654,7 @@ function air_share_desk_payload(array $data): array
         'url'             => air_share_desk_url($data['desk']),
         'text'            => (string) ($data['text'] ?? ''),
         'files'           => $files,
+        'board_type'      => (string) ($data['board_type'] ?? 'remote'),
         'updated_at'      => (int) ($data['updated_at'] ?? 0),
         'expires_at'      => gmdate('c', (int) ($data['expires_at'] ?? 0)),
         'expires_in_days' => (int) (air_share_retention_seconds() / 86400),

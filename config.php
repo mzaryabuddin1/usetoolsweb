@@ -273,6 +273,7 @@ $TOOLS = [
     ['slug' => 'card-validator', 'title' => 'Credit Card Validator', 'description' => 'Validate credit card numbers using the Luhn algorithm.', 'icon' => '💳', 'category' => 'utility'],
     ['slug' => 'iban-validator', 'title' => 'IBAN Validator', 'description' => 'Validate International Bank Account Numbers.', 'icon' => '🏛️', 'category' => 'utility'],
     ['slug' => 'video-cutter', 'title' => 'Video Cutter', 'description' => 'Trim and cut videos online. Preview in browser, export with FFmpeg — deleted after processing.', 'icon' => '🎬', 'category' => 'utility'],
+    ['slug' => 'video-frame-extractor', 'title' => 'Video Frame Extractor', 'description' => 'Extract any frame from a video and download it as PNG or JPG — scrub timeline and pick the perfect shot.', 'icon' => '📸', 'category' => 'utility'],
     ['slug' => 'audio-cutter', 'title' => 'Audio Cutter', 'description' => 'Trim audio with waveform. Reorder clips, insert silence, remove blank gaps, export MP3 or WAV.', 'icon' => '🎵', 'category' => 'utility'],
 ];
 

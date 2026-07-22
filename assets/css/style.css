@@ -2199,6 +2199,117 @@ select:focus {
     margin: 0 auto;
 }
 
+/* Video frame extractor */
+.vfe-label {
+    display: block;
+    font-weight: 600;
+    font-size: 0.85rem;
+    margin-bottom: 0.5rem;
+}
+
+.vfe-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+    margin-top: 1rem;
+}
+
+@media (max-width: 768px) {
+    .vfe-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+.vfe-frame-preview {
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 180px;
+}
+
+.vfe-frame-preview canvas {
+    max-width: 100%;
+    max-height: 420px;
+    display: block;
+}
+
+.vfe-frame-meta {
+    margin: 0.5rem 0 0;
+}
+
+.vfe-scrubber-wrap {
+    margin-top: 1.25rem;
+}
+
+.vfe-scrubber-head {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    color: var(--color-muted);
+    margin-bottom: 0.35rem;
+}
+
+.vfe-scrubber-wrap input[type="range"] {
+    width: 100%;
+}
+
+.vfe-format-select {
+    max-width: 6rem;
+}
+
+.vfe-filmstrip-wrap {
+    margin-top: 1.5rem;
+}
+
+.vfe-filmstrip {
+    display: flex;
+    gap: 0.5rem;
+    overflow-x: auto;
+    padding: 0.35rem 0 0.75rem;
+    scroll-snap-type: x mandatory;
+}
+
+.vfe-thumb {
+    flex: 0 0 auto;
+    width: 120px;
+    padding: 0;
+    border: 2px solid var(--color-border);
+    border-radius: 8px;
+    background: var(--color-surface);
+    cursor: pointer;
+    overflow: hidden;
+    scroll-snap-align: start;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.vfe-thumb:hover {
+    border-color: var(--color-primary);
+}
+
+.vfe-thumb.active {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px var(--color-primary-light);
+}
+
+.vfe-thumb img {
+    display: block;
+    width: 100%;
+    height: auto;
+    vertical-align: top;
+}
+
+.vfe-thumb-time {
+    display: block;
+    font-size: 0.7rem;
+    padding: 0.25rem 0.35rem;
+    color: var(--color-muted);
+    text-align: center;
+}
+
 .timeline-panel {
     margin-top: 1rem;
     position: relative;
